@@ -91,46 +91,46 @@ export function OceanWaves() {
           },
         ]
       : [
-          // Light mode - subtle and elegant
+          // Light mode - more visible, similar to dark mode
           {
             amplitude: 50,
             frequency: 0.005,
             speed: 0.015,
             offset: 0,
-            opacity: 0.08,
-            color: { r: 100, g: 150, b: 255 },
+            opacity: 0.18,
+            color: { r: 80, g: 130, b: 255 },
           },
           {
             amplitude: 40,
             frequency: 0.008,
             speed: 0.02,
             offset: Math.PI / 3,
-            opacity: 0.06,
-            color: { r: 120, g: 100, b: 255 },
+            opacity: 0.15,
+            color: { r: 100, g: 80, b: 255 },
           },
           {
             amplitude: 35,
             frequency: 0.01,
             speed: 0.025,
             offset: Math.PI / 2,
-            opacity: 0.05,
-            color: { r: 180, g: 120, b: 255 },
+            opacity: 0.12,
+            color: { r: 160, g: 100, b: 255 },
           },
           {
             amplitude: 30,
             frequency: 0.003,
             speed: 0.01,
             offset: Math.PI,
-            opacity: 0.04,
-            color: { r: 150, g: 180, b: 255 },
+            opacity: 0.1,
+            color: { r: 120, g: 160, b: 255 },
           },
           {
             amplitude: 25,
             frequency: 0.006,
             speed: 0.018,
             offset: Math.PI * 1.5,
-            opacity: 0.03,
-            color: { r: 100, g: 200, b: 255 },
+            opacity: 0.08,
+            color: { r: 80, g: 180, b: 255 },
           },
         ];
 
@@ -237,7 +237,7 @@ export function OceanWaves() {
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
-        style={{ opacity: isDarkMode ? 0.6 : 0.4 }}
+        style={{ opacity: isDarkMode ? 0.6 : 0.55 }}
       />
 
       {/* Overlay gradient for depth */}
@@ -256,11 +256,11 @@ export function OceanWaves() {
                 "radial-gradient(circle at 20% 50%, rgba(150, 200, 255, 0.15) 0%, transparent 70%)",
               ]
             : [
-                "radial-gradient(circle at 20% 50%, rgba(120, 150, 255, 0.05) 0%, transparent 70%)",
-                "radial-gradient(circle at 50% 50%, rgba(150, 120, 255, 0.05) 0%, transparent 70%)",
-                "radial-gradient(circle at 80% 50%, rgba(120, 180, 255, 0.05) 0%, transparent 70%)",
-                "radial-gradient(circle at 50% 50%, rgba(150, 120, 255, 0.05) 0%, transparent 70%)",
-                "radial-gradient(circle at 20% 50%, rgba(120, 150, 255, 0.05) 0%, transparent 70%)",
+                "radial-gradient(circle at 20% 50%, rgba(120, 150, 255, 0.10) 0%, transparent 70%)",
+                "radial-gradient(circle at 50% 50%, rgba(150, 120, 255, 0.10) 0%, transparent 70%)",
+                "radial-gradient(circle at 80% 50%, rgba(120, 180, 255, 0.10) 0%, transparent 70%)",
+                "radial-gradient(circle at 50% 50%, rgba(150, 120, 255, 0.10) 0%, transparent 70%)",
+                "radial-gradient(circle at 20% 50%, rgba(120, 150, 255, 0.10) 0%, transparent 70%)",
               ],
         }}
         transition={{
@@ -274,11 +274,13 @@ export function OceanWaves() {
       <motion.div
         className="absolute inset-0 overflow-hidden"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 0.2 }}
+        animate={{ opacity: isDarkMode ? 0.2 : 0.3 }}
         transition={{ delay: 1, duration: 2 }}
       >
         <motion.div
-          className="absolute -top-1/2 left-1/4 w-px h-[200%] bg-gradient-to-b from-transparent via-blue-400/10 to-transparent"
+          className={`absolute -top-1/2 left-1/4 w-px h-[200%] bg-gradient-to-b from-transparent ${
+            isDarkMode ? "via-blue-400/10" : "via-blue-500/15"
+          } to-transparent`}
           animate={{
             x: [0, 100, 0],
             opacity: [0.2, 0.3, 0.2],
@@ -291,7 +293,9 @@ export function OceanWaves() {
           style={{ transform: "rotate(12deg)" }}
         />
         <motion.div
-          className="absolute -top-1/2 left-1/2 w-px h-[200%] bg-gradient-to-b from-transparent via-purple-400/10 to-transparent"
+          className={`absolute -top-1/2 left-1/2 w-px h-[200%] bg-gradient-to-b from-transparent ${
+            isDarkMode ? "via-purple-400/10" : "via-purple-500/15"
+          } to-transparent`}
           animate={{
             x: [0, -80, 0],
             opacity: [0.15, 0.25, 0.15],
@@ -305,7 +309,9 @@ export function OceanWaves() {
           style={{ transform: "rotate(-8deg)" }}
         />
         <motion.div
-          className="absolute -top-1/2 right-1/3 w-px h-[200%] bg-gradient-to-b from-transparent via-cyan-400/10 to-transparent"
+          className={`absolute -top-1/2 right-1/3 w-px h-[200%] bg-gradient-to-b from-transparent ${
+            isDarkMode ? "via-cyan-400/10" : "via-cyan-500/15"
+          } to-transparent`}
           animate={{
             x: [0, 60, 0],
             opacity: [0.1, 0.2, 0.1],
