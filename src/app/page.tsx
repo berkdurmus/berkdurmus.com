@@ -223,7 +223,7 @@ export default function Home() {
         </motion.section>
 
         {/* Projects Section */}
-        <motion.section
+        {/* <motion.section
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.8 }}
@@ -243,7 +243,7 @@ export default function Home() {
               <ProjectCard key={project.title} {...project} index={index} />
             ))}
           </div>
-        </motion.section>
+        </motion.section> */}
 
         {/* Footer with Social Links */}
         <motion.footer
