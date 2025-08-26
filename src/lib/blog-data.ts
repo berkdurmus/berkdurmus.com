@@ -5,7 +5,7 @@ export const blogPosts = [
   {
     title: "Shipping Fast: Team Autonomy Unleashed",
     slug: "shipping-fast",
-    date: "September 2025",
+    date: "August 2025",
     readingTime: "Quick to Read" as const,
     description: "Maximizing team velocity through autonomy and ownership",
   },
