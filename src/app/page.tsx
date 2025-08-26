@@ -151,7 +151,7 @@ export default function Home() {
               exceptional digital experiences. My work sits at the intersection
               of{" "}
               <span className="font-medium text-gray-900 dark:text-gray-100">
-                design
+                product
               </span>
               ,
               <span className="font-medium text-gray-900 dark:text-gray-100">
@@ -223,18 +223,27 @@ export default function Home() {
         </motion.section>
 
         {/* Projects Section */}
-        {/* <motion.section
+        <motion.section
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.8 }}
           className="mb-20 max-w-4xl"
         >
+          <motion.h3
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.9, duration: 0.5 }}
+            className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-18"
+          >
+            Work{" "}
+          </motion.h3>
+
           <div className="space-y-2">
             {projects.map((project, index) => (
               <ProjectCard key={project.title} {...project} index={index} />
             ))}
           </div>
-        </motion.section> */}
+        </motion.section>
 
         {/* Footer with Social Links */}
         <motion.footer
