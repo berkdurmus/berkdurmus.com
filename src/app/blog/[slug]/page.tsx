@@ -1,18 +1,62 @@
-"use client";
-
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypeHighlight from "rehype-highlight";
-import remarkGfm from "remark-gfm";
+import { promises as fs } from "fs";
+import path from "path";
 import type { BlogPost } from "@/lib/types";
+import { getBlogPostMetadata } from "@/lib/blog-data";
+// @ts-ignore
+import BlogPostClient from "./client";
 
-// This would typically come from a CMS or markdown files
-const blogContent: Record<string, BlogPost> = {
+// This function will be used to get blog content from files
+async function getBlogContent(slug: string): Promise<BlogPost | null> {
+  try {
+    // Define the path to the blogs directory
+    const blogsDirectory = path.join(process.cwd(), "src/blogs");
+
+    // Check if the file exists
+    const filePath = path.join(blogsDirectory, `${slug}.md`);
+    let content;
+
+    try {
+      content = await fs.readFile(filePath, "utf8");
+    } catch (error) {
+      // If the specific slug isn't found as a file, check in hardcoded content
+      return hardcodedBlogContent[slug] || null;
+    }
+
+    // Get metadata from our central blog data store
+    const metadata = getBlogPostMetadata(slug);
+
+    if (!metadata) {
+      // Fallback to generating title from slug if not in our central data
+      return {
+        title: slug
+          .split("-")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
+        date: new Date().toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+        }),
+        readingTime: "Sometime to read",
+        content: content,
+        isMarkdown: true,
+      };
+    }
+
+    // Use metadata from central store
+    return {
+      ...metadata,
+      content: content,
+      isMarkdown: true,
+    };
+  } catch (error) {
+    console.error("Error loading blog content:", error);
+    return null;
+  }
+}
+
+// Keep hardcoded content as a fallback
+const hardcodedBlogContent: Record<string, BlogPost> = {
   "building-future-with-ai": {
     title: "Building the Future with AI",
     date: "December 2024",
@@ -186,124 +230,16 @@ Clean code extends beyond syntax and structure. It's about creating systems that
   },
 };
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
-  const post = blogContent[params.slug];
+export default async function BlogPost({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const post = await getBlogContent(params.slug);
 
   if (!post) {
     notFound();
   }
 
-  return (
-    <main className="min-h-screen">
-      <article className="max-w-3xl mx-auto px-6 py-20">
-        {/* Back link */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
-        >
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to home</span>
-          </Link>
-        </motion.div>
-
-        {/* Article header */}
-        <motion.header
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.5 }}
-          className="mb-12"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            {post.title}
-          </h1>
-          <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-            <time>{post.date}</time>
-            <span className="text-gray-300 dark:text-gray-700">•</span>
-            <span>{post.readingTime}</span>
-          </div>
-        </motion.header>
-
-        {/* Article content */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="prose prose-lg prose-gray dark:prose-invert max-w-none"
-        >
-          {post.isMarkdown ? (
-            <ReactMarkdown
-              rehypePlugins={[
-                rehypeSlug,
-                rehypeAutolinkHeadings,
-                rehypeHighlight,
-              ]}
-              remarkPlugins={[remarkGfm]}
-            >
-              {post.content.trim()}
-            </ReactMarkdown>
-          ) : (
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
-          )}
-        </motion.div>
-
-        {/* Footer */}
-        <motion.footer
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="mt-20 pt-12 border-t border-gray-200 dark:border-gray-800"
-        >
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to all posts</span>
-          </Link>
-        </motion.footer>
-      </article>
-
-      <style jsx global>{`
-        .prose h1 {
-          @apply text-3xl font-bold mt-16 mb-6 text-gray-900 dark:text-gray-100;
-        }
-        .prose h2 {
-          @apply text-2xl font-semibold mt-12 mb-4 text-gray-900 dark:text-gray-100;
-        }
-        .prose h3 {
-          @apply text-xl font-semibold mt-10 mb-4 text-gray-900 dark:text-gray-100;
-        }
-        .prose p {
-          @apply text-gray-700 dark:text-gray-300 leading-relaxed mb-6;
-        }
-        .prose ul {
-          @apply my-6 space-y-2;
-        }
-        .prose li {
-          @apply text-gray-700 dark:text-gray-300 ml-6;
-        }
-        .prose a {
-          @apply text-blue-600 dark:text-blue-400 hover:underline;
-        }
-        .prose blockquote {
-          @apply pl-4 border-l-4 border-gray-300 dark:border-gray-700 italic text-gray-700 dark:text-gray-300;
-        }
-        .prose code {
-          @apply bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1 py-0.5 rounded text-sm;
-        }
-        .prose pre {
-          @apply bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-x-auto;
-        }
-        .prose pre code {
-          @apply bg-transparent p-0 text-gray-800 dark:text-gray-200;
-        }
-      `}</style>
-    </main>
-  );
+  return <BlogPostClient post={post} />;
 }

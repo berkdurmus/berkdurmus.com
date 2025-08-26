@@ -6,6 +6,7 @@ import { BlogCard } from "@/components/blog-card";
 import { SocialLinks } from "@/components/social-links";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { ProjectCard } from "@/components/project-card";
+import { useEffect, useState } from "react";
 
 // Sample data - you can move these to separate data files later
 const projects = [
@@ -41,48 +42,7 @@ const projects = [
   },
 ];
 
-const blogPosts = [
-  {
-    title: "Building the Future with AI",
-    slug: "building-future-with-ai",
-    date: "December 2024",
-    readingTime: "Quick to Read" as const,
-    description:
-      "Exploring how AI is transforming the way we build products and experiences.",
-  },
-  {
-    title: "The Art of Product Engineering",
-    slug: "art-of-product-engineering",
-    date: "November 2024",
-    readingTime: "Sometime to read" as const,
-    description:
-      "Deep dive into the principles and practices of modern product engineering.",
-  },
-  {
-    title: "Defending Earth: A Technical Analysis of LLM Security",
-    slug: "defending-earth-llm-security",
-    date: "October 2024",
-    readingTime: "Impossible to Read all" as const,
-    description:
-      "A comprehensive guide to understanding and mitigating risks in Large Language Models.",
-  },
-  {
-    title: "From Idea to Product in 48 Hours",
-    slug: "idea-to-product-48-hours",
-    date: "September 2024",
-    readingTime: "Quick to Read" as const,
-    description:
-      "How to rapidly prototype and launch products that users love.",
-  },
-  {
-    title: "The Philosophy of Clean Code",
-    slug: "philosophy-clean-code",
-    date: "August 2024",
-    readingTime: "Sometime to read" as const,
-    description:
-      "Why writing maintainable code is an art form worth mastering.",
-  },
-];
+import { blogPosts } from "@/lib/blog-data";
 
 export default function Home() {
   return (
@@ -147,54 +107,54 @@ export default function Home() {
             className="space-y-10"
           >
             <p className="text-xl md:text-2xl leading-relaxed text-gray-800 dark:text-gray-200">
-              I&apos;m a product engineer with a passion for crafting
-              exceptional digital experiences. My work sits at the intersection
-              of{" "}
-              <span className="font-medium text-gray-900 dark:text-gray-100">
-                product
-              </span>
-              ,
-              <span className="font-medium text-gray-900 dark:text-gray-100">
-                {" "}
-                engineering
-              </span>
-              , and
-              <span className="font-medium text-gray-900 dark:text-gray-100">
-                {" "}
-                artificial intelligence
-              </span>
-              .
+              I&apos;m a product engineer who writes code by day and debugs
+              dreams by night.
             </p>
 
-            <div className="grid md:grid-cols-2 gap-10">
+            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mt-6">
+              I&apos;ve co-founded 3 startups (because sleep is overrated), with
+              pulfy.com reaching 10k+ monthly paying customers in 2020. These
+              days at Center Health, I build AI workflows and agents that make
+              hundreds of thousands of patients&apos; lives easier - no
+              pressure, right?
+            </p>
+
+            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mt-6">
+              When I&apos;m not crafting clinical agents, voice call agents, or
+              MCP servers, I&apos;m probably obsessing over my latest creation:
+              Self Evolving Layered Structured Memory or fine-tuning my prompt
+              management systems.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-10 mt-8">
               <div className="space-y-3">
                 <h4 className="text-base font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   <span className="w-2 h-2 bg-green-500 rounded-full" />
-                  Currently
+                  Current Obsessions
                 </h4>
                 <p className="text-base text-gray-700 dark:text-gray-300 pl-4">
-                  Building AI-powered tools that make developers more productive
-                  and creative.
+                  Building AI-driven systems including dev tools, copilots,
+                  evaluation frameworks, and memory architectures while trying
+                  not to create Skynet by accident.
                 </p>
               </div>
 
               <div className="space-y-3">
                 <h4 className="text-base font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   <span className="w-2 h-2 bg-blue-500 rounded-full" />
-                  Focus Areas
+                  Side Quests
                 </h4>
                 <p className="text-base text-gray-700 dark:text-gray-300 pl-4">
-                  LLM applications, developer tools, and creating seamless user
-                  experiences.
+                  Created Berf (my own DSL language, because the world needed
+                  one more), Playwright Debug Agent, and OpenTelemetry Agent.
                 </p>
               </div>
             </div>
 
-            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-              With experience spanning startups to enterprise, I bring a
-              pragmatic approach to building products that scale. I believe in
-              writing clean, maintainable code and creating interfaces that feel
-              intuitive from the first interaction.
+            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mt-6">
+              If you need me, I&apos;ll be somewhere at the intersection of
+              product, engineering, and artificial intelligence - probably
+              arguing with an LLM about the meaning of life.
             </p>
           </motion.div>
         </motion.section>
