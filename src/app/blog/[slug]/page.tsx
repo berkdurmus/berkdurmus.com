@@ -4,152 +4,184 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeHighlight from "rehype-highlight";
+import remarkGfm from "remark-gfm";
+import type { BlogPost } from "@/lib/types";
 
 // This would typically come from a CMS or markdown files
-const blogContent: Record<
-  string,
-  {
-    title: string;
-    date: string;
-    readingTime: string;
-    content: string;
-  }
-> = {
+const blogContent: Record<string, BlogPost> = {
   "building-future-with-ai": {
     title: "Building the Future with AI",
     date: "December 2024",
     readingTime: "Quick to Read",
+    isMarkdown: true,
     content: `
-      <p>The intersection of artificial intelligence and product development is creating unprecedented opportunities for builders and innovators. As we stand at the threshold of a new era, the question isn't whether to integrate AI into our products, but how to do it thoughtfully and effectively.</p>
+The intersection of artificial intelligence and product development is creating unprecedented opportunities for builders and innovators. As we stand at the threshold of a new era, the question isn't whether to integrate AI into our products, but how to do it thoughtfully and effectively.
 
-      <h2>The New Building Blocks</h2>
-      <p>Large Language Models have fundamentally changed what's possible in product development. What once required teams of engineers can now be prototyped in hours. The democratization of AI capabilities means that builders at every level can create experiences that were previously the domain of tech giants.</p>
+### The New Building Blocks
 
-      <h2>Beyond the Hype</h2>
-      <p>While the excitement around AI is justified, the real value comes from solving genuine user problems. The best AI-powered products don't showcase the technology—they make it invisible, seamlessly enhancing the user experience without friction.</p>
+Large Language Models have fundamentally changed what's possible in product development. What once required teams of engineers can now be prototyped in hours. The democratization of AI capabilities means that builders at every level can create experiences that were previously the domain of tech giants.
 
-      <h2>The Builder's Mindset</h2>
-      <p>Success in this new landscape requires a combination of technical understanding and product intuition. It's not enough to know how to implement AI; you need to understand when and why to use it. The builders who will thrive are those who can bridge the gap between technological capability and human need.</p>
+## Beyond the Hype
 
-      <h2>Looking Forward</h2>
-      <p>As we continue to push the boundaries of what's possible, remember that the fundamentals haven't changed. Great products solve real problems for real people. AI is simply a new tool in our toolkit—powerful, yes, but ultimately just another way to create value for users.</p>
+While the excitement around AI is justified, the real value comes from solving genuine user problems. The best AI-powered products don't showcase the technology—they make it invisible, seamlessly enhancing the user experience without friction.
+
+## The Builder's Mindset
+
+Success in this new landscape requires a combination of technical understanding and product intuition. It's not enough to know how to implement AI; you need to understand when and why to use it. The builders who will thrive are those who can bridge the gap between technological capability and human need.
+
+## Looking Forward
+
+As we continue to push the boundaries of what's possible, remember that the fundamentals haven't changed. Great products solve real problems for real people. AI is simply a new tool in our toolkit—powerful, yes, but ultimately just another way to create value for users.
     `,
   },
   "art-of-product-engineering": {
     title: "The Art of Product Engineering",
     date: "November 2024",
     readingTime: "Sometime to read",
+    isMarkdown: true,
     content: `
-      <p>Product engineering is more than just writing code. It's about understanding the delicate balance between technical excellence and user experience, between shipping fast and building for scale, between innovation and reliability.</p>
+Product engineering is more than just writing code. It's about understanding the delicate balance between technical excellence and user experience, between shipping fast and building for scale, between innovation and reliability.
 
-      <h2>The Dual Mindset</h2>
-      <p>Great product engineers think like both builders and users. They can zoom out to see the big picture and zoom in to debug a single line of code. This dual perspective is what separates good engineers from exceptional ones.</p>
+## The Dual Mindset
 
-      <h2>Speed vs. Quality: The False Dichotomy</h2>
-      <p>The age-old debate of speed versus quality misses the point. The best product engineers know how to move fast without breaking things. They understand that technical debt is a tool, not a burden, when used strategically.</p>
+Great product engineers think like both builders and users. They can zoom out to see the big picture and zoom in to debug a single line of code. This dual perspective is what separates good engineers from exceptional ones.
 
-      <h2>The Iteration Loop</h2>
-      <p>Product engineering is fundamentally about iteration. Ship, learn, improve, repeat. The faster this loop, the better the product becomes. But speed alone isn't enough—each iteration must be informed by real user feedback and data.</p>
+## Speed vs. Quality: The False Dichotomy
 
-      <h2>Building for Scale</h2>
-      <p>Every line of code you write today will either enable or constrain your future. Product engineers must balance immediate needs with long-term vision, building systems that can grow with the product.</p>
+The age-old debate of speed versus quality misses the point. The best product engineers know how to move fast without breaking things. They understand that technical debt is a tool, not a burden, when used strategically.
 
-      <h2>The Human Element</h2>
-      <p>At its core, product engineering is about people. The best technical solution means nothing if users can't understand it. The most elegant architecture fails if it doesn't solve real problems. Never lose sight of the human element in your work.</p>
+## The Iteration Loop
+
+Product engineering is fundamentally about iteration. Ship, learn, improve, repeat. The faster this loop, the better the product becomes. But speed alone isn't enough—each iteration must be informed by real user feedback and data.
+
+## Building for Scale
+
+Every line of code you write today will either enable or constrain your future. Product engineers must balance immediate needs with long-term vision, building systems that can grow with the product.
+
+## The Human Element
+
+At its core, product engineering is about people. The best technical solution means nothing if users can't understand it. The most elegant architecture fails if it doesn't solve real problems. Never lose sight of the human element in your work.
     `,
   },
   "defending-earth-llm-security": {
     title: "Defending Earth: A Technical Analysis of LLM Security",
     date: "October 2024",
     readingTime: "Impossible to Read all",
+    isMarkdown: true,
     content: `
-      <p>As Large Language Models become increasingly powerful and ubiquitous, the question of security becomes paramount. This isn't just about protecting data—it's about ensuring these systems remain aligned with human values as they grow in capability.</p>
+As Large Language Models become increasingly powerful and ubiquitous, the question of security becomes paramount. This isn't just about protecting data—it's about ensuring these systems remain aligned with human values as they grow in capability.
 
-      <h2>The Attack Surface</h2>
-      <p>LLMs present a unique security challenge. Traditional security models don't fully apply to systems that can generate arbitrary text, understand context, and potentially influence human behavior at scale. The attack surface isn't just technical—it's cognitive and social.</p>
+## The Attack Surface
 
-      <h2>Prompt Injection: The New SQL Injection</h2>
-      <p>Just as SQL injection dominated web security concerns for decades, prompt injection represents a fundamental vulnerability in LLM-based systems. But unlike SQL injection, which has well-established defenses, prompt injection remains an open problem with no perfect solution.</p>
+LLMs present a unique security challenge. Traditional security models don't fully apply to systems that can generate arbitrary text, understand context, and potentially influence human behavior at scale. The attack surface isn't just technical—it's cognitive and social.
 
-      <h2>The Alignment Problem</h2>
-      <p>Beyond traditional security concerns lies the alignment problem: ensuring AI systems do what we want them to do, not just what we tell them to do. This subtle distinction becomes critical as these systems become more capable and autonomous.</p>
+## Prompt Injection: The New SQL Injection
 
-      <h2>Defense in Depth</h2>
-      <p>Securing LLM-based systems requires a multi-layered approach:</p>
-      <ul>
-        <li>Input validation and sanitization</li>
-        <li>Output filtering and monitoring</li>
-        <li>Rate limiting and anomaly detection</li>
-        <li>Human-in-the-loop validation for critical operations</li>
-        <li>Regular security audits and red team exercises</li>
-      </ul>
+Just as SQL injection dominated web security concerns for decades, prompt injection represents a fundamental vulnerability in LLM-based systems. But unlike SQL injection, which has well-established defenses, prompt injection remains an open problem with no perfect solution.
 
-      <h2>The Governance Challenge</h2>
-      <p>Technical solutions alone won't suffice. We need robust governance frameworks, industry standards, and possibly new regulatory approaches to ensure these powerful systems remain beneficial and safe.</p>
+## The Alignment Problem
 
-      <h2>The Path Forward</h2>
-      <p>As defenders of Earth (only half-joking), we must remain vigilant. The rapid pace of AI development means security considerations often lag behind capabilities. By building security into the foundation of our AI systems, rather than bolting it on afterward, we can create a future where AI enhances rather than threatens human flourishing.</p>
+Beyond traditional security concerns lies the alignment problem: ensuring AI systems do what we want them to do, not just what we tell them to do. This subtle distinction becomes critical as these systems become more capable and autonomous.
 
-      <h2>Conclusion</h2>
-      <p>The security challenges posed by LLMs are real and significant, but not insurmountable. Through careful design, robust testing, and a commitment to safety, we can harness the power of these systems while minimizing their risks. The future depends on getting this right.</p>
+## Defense in Depth
+
+Securing LLM-based systems requires a multi-layered approach:
+
+* Input validation and sanitization
+* Output filtering and monitoring
+* Rate limiting and anomaly detection
+* Human-in-the-loop validation for critical operations
+* Regular security audits and red team exercises
+
+## The Governance Challenge
+
+Technical solutions alone won't suffice. We need robust governance frameworks, industry standards, and possibly new regulatory approaches to ensure these powerful systems remain beneficial and safe.
+
+## The Path Forward
+
+As defenders of Earth (only half-joking), we must remain vigilant. The rapid pace of AI development means security considerations often lag behind capabilities. By building security into the foundation of our AI systems, rather than bolting it on afterward, we can create a future where AI enhances rather than threatens human flourishing.
+
+## Conclusion
+
+The security challenges posed by LLMs are real and significant, but not insurmountable. Through careful design, robust testing, and a commitment to safety, we can harness the power of these systems while minimizing their risks. The future depends on getting this right.
     `,
   },
   "idea-to-product-48-hours": {
     title: "From Idea to Product in 48 Hours",
     date: "September 2024",
     readingTime: "Quick to Read",
+    isMarkdown: true,
     content: `
-      <p>The ability to rapidly transform ideas into working products is a superpower in today's fast-moving world. Here's how to go from concept to launch in just 48 hours.</p>
+The ability to rapidly transform ideas into working products is a superpower in today's fast-moving world. Here's how to go from concept to launch in just 48 hours.
 
-      <h2>Hour 0-4: Validation</h2>
-      <p>Before writing a single line of code, validate your idea. Talk to potential users, research existing solutions, and clearly define the problem you're solving. If you can't articulate the problem in one sentence, you're not ready to build.</p>
+## Hour 0-4: Validation
 
-      <h2>Hour 4-8: Design</h2>
-      <p>Sketch the core user flow. Focus on the happy path—the simplest journey from problem to solution. Cut everything that isn't essential. Your MVP should be embarrassingly simple.</p>
+Before writing a single line of code, validate your idea. Talk to potential users, research existing solutions, and clearly define the problem you're solving. If you can't articulate the problem in one sentence, you're not ready to build.
 
-      <h2>Hour 8-24: Build</h2>
-      <p>This is where the magic happens. Use familiar tools, leverage existing libraries, and don't reinvent the wheel. The goal is a working prototype, not production-ready code.</p>
+## Hour 4-8: Design
 
-      <h2>Hour 24-32: Polish</h2>
-      <p>Make it usable. Fix critical bugs, improve the UI just enough to not be embarrassing, and ensure the core flow works smoothly. Perfect is the enemy of done.</p>
+Sketch the core user flow. Focus on the happy path—the simplest journey from problem to solution. Cut everything that isn't essential. Your MVP should be embarrassingly simple.
 
-      <h2>Hour 32-40: Deploy</h2>
-      <p>Get it live. Use simple deployment solutions, don't over-engineer the infrastructure. You can always improve it later if the product gains traction.</p>
+## Hour 8-24: Build
 
-      <h2>Hour 40-48: Launch</h2>
-      <p>Share with the world. Post on social media, reach out to early users, gather feedback. The launch is just the beginning of the journey.</p>
+This is where the magic happens. Use familiar tools, leverage existing libraries, and don't reinvent the wheel. The goal is a working prototype, not production-ready code.
 
-      <h2>The Secret</h2>
-      <p>The real secret to rapid product development isn't working faster—it's working smarter. By focusing ruthlessly on the core value proposition and cutting everything else, you can achieve in hours what might otherwise take weeks.</p>
+## Hour 24-32: Polish
+
+Make it usable. Fix critical bugs, improve the UI just enough to not be embarrassing, and ensure the core flow works smoothly. Perfect is the enemy of done.
+
+## Hour 32-40: Deploy
+
+Get it live. Use simple deployment solutions, don't over-engineer the infrastructure. You can always improve it later if the product gains traction.
+
+## Hour 40-48: Launch
+
+Share with the world. Post on social media, reach out to early users, gather feedback. The launch is just the beginning of the journey.
+
+## The Secret
+
+The real secret to rapid product development isn't working faster—it's working smarter. By focusing ruthlessly on the core value proposition and cutting everything else, you can achieve in hours what might otherwise take weeks.
     `,
   },
   "philosophy-clean-code": {
     title: "The Philosophy of Clean Code",
     date: "August 2024",
     readingTime: "Sometime to read",
+    isMarkdown: true,
     content: `
-      <p>Clean code is more than a set of rules—it's a philosophy, a way of thinking about software that prioritizes clarity, maintainability, and respect for future developers (including your future self).</p>
+Clean code is more than a set of rules—it's a philosophy, a way of thinking about software that prioritizes clarity, maintainability, and respect for future developers (including your future self).
 
-      <h2>Code as Communication</h2>
-      <p>We write code for humans, not computers. The computer doesn't care if your variable is named 'x' or 'userAuthenticationToken'. But the developer debugging your code at 3 AM certainly does.</p>
+## Code as Communication
 
-      <h2>The Cost of Complexity</h2>
-      <p>Every line of code is a liability. It needs to be understood, maintained, and potentially debugged. The best code is often the code you don't write. Simplicity isn't just elegant—it's economical.</p>
+We write code for humans, not computers. The computer doesn't care if your variable is named 'x' or 'userAuthenticationToken'. But the developer debugging your code at 3 AM certainly does.
 
-      <h2>Names Matter</h2>
-      <p>Naming is one of the hardest problems in computer science because it requires you to truly understand what you're building. A well-named function or variable is worth a thousand comments.</p>
+## The Cost of Complexity
 
-      <h2>The Boy Scout Rule</h2>
-      <p>Leave the code better than you found it. Even small improvements—renaming a variable, extracting a function, adding a clarifying comment—compound over time to transform a codebase.</p>
+Every line of code is a liability. It needs to be understood, maintained, and potentially debugged. The best code is often the code you don't write. Simplicity isn't just elegant—it's economical.
 
-      <h2>Testing as Design</h2>
-      <p>Tests aren't just about catching bugs—they're about design. If code is hard to test, it's probably hard to use. Writing tests first forces you to think about interfaces and contracts before implementation.</p>
+## Names Matter
 
-      <h2>The Zen of Refactoring</h2>
-      <p>Refactoring isn't about perfection—it's about continuous improvement. Like tending a garden, small, regular maintenance prevents the need for major overhauls.</p>
+Naming is one of the hardest problems in computer science because it requires you to truly understand what you're building. A well-named function or variable is worth a thousand comments.
 
-      <h2>Beyond the Code</h2>
-      <p>Clean code extends beyond syntax and structure. It's about creating systems that are understandable, modifiable, and delightful to work with. It's about respecting the craft and the craftspeople who will come after you.</p>
+## The Boy Scout Rule
+
+Leave the code better than you found it. Even small improvements—renaming a variable, extracting a function, adding a clarifying comment—compound over time to transform a codebase.
+
+## Testing as Design
+
+Tests aren't just about catching bugs—they're about design. If code is hard to test, it's probably hard to use. Writing tests first forces you to think about interfaces and contracts before implementation.
+
+## The Zen of Refactoring
+
+Refactoring isn't about perfection—it's about continuous improvement. Like tending a garden, small, regular maintenance prevents the need for major overhauls.
+
+## Beyond the Code
+
+Clean code extends beyond syntax and structure. It's about creating systems that are understandable, modifiable, and delightful to work with. It's about respecting the craft and the craftspeople who will come after you.
     `,
   },
 };
@@ -203,8 +235,22 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.8 }}
           className="prose prose-lg prose-gray dark:prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        >
+          {post.isMarkdown ? (
+            <ReactMarkdown
+              rehypePlugins={[
+                rehypeSlug,
+                rehypeAutolinkHeadings,
+                rehypeHighlight,
+              ]}
+              remarkPlugins={[remarkGfm]}
+            >
+              {post.content.trim()}
+            </ReactMarkdown>
+          ) : (
+            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+          )}
+        </motion.div>
 
         {/* Footer */}
         <motion.footer
@@ -224,8 +270,14 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
       </article>
 
       <style jsx global>{`
+        .prose h1 {
+          @apply text-3xl font-bold mt-16 mb-6 text-gray-900 dark:text-gray-100;
+        }
         .prose h2 {
           @apply text-2xl font-semibold mt-12 mb-4 text-gray-900 dark:text-gray-100;
+        }
+        .prose h3 {
+          @apply text-xl font-semibold mt-10 mb-4 text-gray-900 dark:text-gray-100;
         }
         .prose p {
           @apply text-gray-700 dark:text-gray-300 leading-relaxed mb-6;
@@ -234,10 +286,22 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
           @apply my-6 space-y-2;
         }
         .prose li {
-          @apply text-gray-700 dark:text-gray-300;
+          @apply text-gray-700 dark:text-gray-300 ml-6;
         }
         .prose a {
           @apply text-blue-600 dark:text-blue-400 hover:underline;
+        }
+        .prose blockquote {
+          @apply pl-4 border-l-4 border-gray-300 dark:border-gray-700 italic text-gray-700 dark:text-gray-300;
+        }
+        .prose code {
+          @apply bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1 py-0.5 rounded text-sm;
+        }
+        .prose pre {
+          @apply bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-x-auto;
+        }
+        .prose pre code {
+          @apply bg-transparent p-0 text-gray-800 dark:text-gray-200;
         }
       `}</style>
     </main>

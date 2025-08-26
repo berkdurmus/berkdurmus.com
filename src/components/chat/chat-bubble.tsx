@@ -84,3 +84,4 @@ export function ChatBubble({ message, isLastMessage }: ChatBubbleProps) {
     </motion.div>
   );
 }
+

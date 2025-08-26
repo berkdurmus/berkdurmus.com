@@ -147,8 +147,9 @@ export default function Home() {
             className="space-y-10"
           >
             <p className="text-xl md:text-2xl leading-relaxed text-gray-800 dark:text-gray-200">
-              I'm a product engineer with a passion for crafting exceptional
-              digital experiences. My work sits at the intersection of{" "}
+              I&apos;m a product engineer with a passion for crafting
+              exceptional digital experiences. My work sits at the intersection
+              of{" "}
               <span className="font-medium text-gray-900 dark:text-gray-100">
                 design
               </span>
