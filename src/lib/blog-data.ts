@@ -2,13 +2,13 @@ import { BlogPost } from "./types";
 
 // Central storage for blog posts metadata
 export const blogPosts = [
-  {
-    title: "Shipping Fast: Team Autonomy Unleashed",
-    slug: "shipping-fast",
-    date: "August 2025",
-    readingTime: "Quick to Read" as const,
-    description: "Maximizing team velocity through autonomy and ownership",
-  },
+  // {
+  //   title: "Shipping Fast: Team Autonomy Unleashed",
+  //   slug: "shipping-fast",
+  //   date: "August 2025",
+  //   readingTime: "Quick to Read" as const,
+  //   description: "Maximizing team velocity through autonomy and ownership",
+  // },
   {
     title: "Building for Coolest Grandma",
     slug: "building-for-coolest-grandma",
