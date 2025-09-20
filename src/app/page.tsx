@@ -113,7 +113,7 @@ export default function Home() {
 
             <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mt-6">
               I&apos;ve co-founded 3 startups (because sleep is overrated), with
-              pulfy.com reaching 10k+ monthly paying customers in 2020. These
+              pulfy.com reaching 10k+ monthly paying customers in 2021. These
               days at Center Health, I build AI workflows and agents that make
               hundreds of thousands of patients&apos; lives easier - no
               pressure, right?
