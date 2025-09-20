@@ -4,32 +4,15 @@ This post is a deep dive into a different approach we built: a Self‑Evolving H
 
 ### TL;DR
 
-- **Flat text memories are brittle.** Summaries lose signal; updates cause unintended edits; rollback is a nightmare.
-- **Pure vectors are great for “vibes,”** not always for precision updates.
-- **Pure rigid schemas are tidy** but can’t evolve fast enough.
-- **We combine structured core memory, episodic records, and a schema evolution manager** so memory can grow safely and stay queryable.
-- **Everything is versioned and updated via JSON Patch,** so changes are targeted, auditable, and reversible.
+Flat text memories are brittle: summaries lose signal, small edits cause unintended changes, and rollback is a nightmare. Pure vectors are great for “vibes” but not for precise updates. Pure rigid schemas are tidy yet can’t evolve fast enough. We combine a structured core, episodic records, and a schema‑evolution manager so memory can grow safely and stay queryable. Everything is versioned and updated via JSON Patch so changes are targeted, auditable, and reversible.
 
 ### The Problem We Set Out to Solve
 
-Our previous two‑phase memory (Extract → Summarize → Store flat text) created technical and UX friction:
-
-- Important micro‑facts vanished in summarization.
-- No surgical updates; any change risked touching unrelated text.
-- No version history, no rollbacks.
-- Contradictions were “summarized away,” not resolved.
-- No typed distinctions between facts, preferences, episodes, goals.
-- Couldn’t adapt to new info types without manual schema tweaks.
-- Retrieval required brittle regex or expensive re‑embedding.
+Our previous two‑phase memory (Extract → Summarize → Store flat text) created technical and UX friction. Important micro‑facts vanished in summarization. We had no way to make surgical updates, so any change risked touching unrelated text. There was no version history to support rollbacks. Contradictions were summarized away instead of resolved. We lost typed distinctions between facts, preferences, episodes, and goals. The system couldn’t adapt to new info types without manual schema work. And retrieval fell back to brittle regex or expensive re‑embedding.
 
 ### The Mental Model: Memory as a Living Organism
 
-Users don’t speak in schemas; they speak in episodes. Systems, however, need structure to reason, retrieve, and evolve reliably. Our compromise:
-
-- **Core Memory (structured facts):** Canonical, typed, precise. Updated via JSON Patch.
-- **Episodic Storage (contextual snippets):** Preserves the words, tone, time, and topic links.
-- **Schema Evolution (gardener):** Detects patterns, proposes/creates categories, and promotes frequently used dynamics into the core schema.
-- **Meta‑Memory (the analyst):** Background processes that generate insights and active problem trackers from the above.
+Users don’t speak in schemas; they speak in episodes. Systems, however, need structure to reason, retrieve, and evolve reliably. Our compromise uses four parts: Core Memory for canonical typed facts updated via JSON Patch, Episodic Storage to preserve wording, tone, time, and topic links, a Schema‑Evolution manager to detect patterns and promote new categories, and Meta‑Memory to generate insights and track active problems.
 
 The result is both human‑faithful (we keep episodes!) and machine‑tractable (we structure facts!)—with an upgrade path when new information keeps showing up.
 
@@ -86,11 +69,7 @@ The core is a strongly structured JSON document that captures the user’s durab
 }
 ```
 
-Key properties:
-
-- **Targeted updates** via JSON Patch (RFC 6902).
-- **Versioned** so we can diff, audit, and roll back.
-- **Dynamic** space for uncaptured patterns, without polluting the core prematurely.
+Key properties include targeted updates via JSON Patch (RFC 6902), full versioning so we can diff, audit, and roll back, and a dynamic space for uncaptured patterns that avoids polluting the core prematurely.
 
 #### JSON Patch: Surgical Edits, Not Summaries
 
@@ -186,11 +165,7 @@ Core memory captures facts; episodes capture the story. We store important snipp
 }
 ```
 
-Why it matters:
-
-- **Recall specificity**: “What exactly did we decide last week?”
-- **Attribution**: “Who said this and when?”
-- **Fact grounding**: Link episodes to core fields they influenced.
+Why it matters: this preserves recall specificity—“What exactly did we decide last week?”—keeps attribution clear—“Who said this and when?”—and grounds facts by linking episodes to the core fields they influenced.
 
 #### Retrieval Sketch
 
@@ -260,13 +235,7 @@ This gives the system memory of what worked for this person—so advice gets sha
 
 Rigid schemas break; amorphous blobs rot. The evolution manager inspects uncategorized and dynamic data, then promotes patterns to first‑class citizens.
 
-Process:
-
-1. Mine `uncategorized` and `dynamicCategories` for recurring keys/topics.
-2. Track usage frequency, recency, and cross‑links.
-3. Propose a normalized category when thresholds are met.
-4. Migrate existing instances into the new structure.
-5. Log the evolution in `_meta.schemaEvolution`.
+Process: mine `uncategorized` and `dynamicCategories` for recurring keys and topics, track usage frequency and recency along with cross‑links, propose a normalized category when thresholds are met, migrate existing instances into the new structure, and log the evolution in `_meta.schemaEvolution`.
 
 Before → After:
 
@@ -314,12 +283,7 @@ function promoteCategory(doc: any, candidate: EvolutionCandidate, categoryName: 
 
 ### Contradiction Handling: Be Picky, Not Forgetful
 
-Contradictions aren’t failure; they’re progress with context. We:
-
-1. Detect conflicting fields (e.g., diagnosis year).
-2. Compare source credibility and confidence.
-3. Replace or deprecate the old value via patch.
-4. Record the event, rationale, and new confidence.
+Contradictions aren’t failure; they’re progress with context. We detect conflicting fields (for example, the diagnosis year), compare source credibility and confidence, replace or deprecate the old value with a patch, and record the event with its rationale and updated confidence.
 
 ```json
 {
@@ -334,13 +298,7 @@ We retain the prior state in the event log for full auditability.
 
 ### Migration: From Flat Text to Living Structure
 
-Pipeline for converting legacy summaries into the new model:
-
-1. **Extraction**: Use an LLM to identify entities (conditions, meds, preferences, habits, etc.).
-2. **Mapping**: Place high‑confidence items into core fields; others into `dynamicCategories` or `uncategorized` with rationale.
-3. **Patch Generation**: Emit JSON Patches rather than wholesale writes.
-4. **Human‑in‑the‑Loop (optional)**: Surface low‑confidence diffs for approval.
-5. **Episodic Backfill**: Keep original sentences as episodes linked to the fields they influenced.
+To convert legacy summaries into the new model, extract entities such as conditions, medications, preferences, and habits. Map high‑confidence items into core fields and route the rest to `dynamicCategories` or `uncategorized` with rationale. Generate JSON Patches instead of wholesale writes. When confidence is low, surface diffs for approval. Finally, keep the original sentences as episodes and link them to the fields they influenced.
 
 Example:
 
@@ -367,13 +325,7 @@ Structured:
 
 ### Retrieval: Context Packing Without Hallucinating
 
-When answering a question, we retrieve:
-
-- Targeted core fields (via JSON pointer paths).
-- Top‑K episodes by topic/path overlap and importance.
-- Active problems/goals that contextualize advice.
-
-Then we format a succinct, grounded context for the model—no need to send the entire memory document.
+When answering a question, we retrieve targeted core fields by JSON pointer paths, the top episodes ranked by topic or path overlap and importance, and any active problems or goals that provide context. We then format a succinct, grounded context for the model—no need to ship the entire memory document.
 
 ```ts
 interface RetrievalQuery {
@@ -390,33 +342,19 @@ function retrieveContext(core: any, episodes: Episode[], q: RetrievalQuery) {
 
 ### Storage & Ops: Practical Considerations
 
-- **Event Sourcing**: Store memory events (patches) append‑only: `MemoryEvents(userId, timestamp)`. Materialize snapshots in `MemorySnapshots(userId, version)`.
-- **Indexing**: Index `metadata.topics`, `metadata.relatedPaths`, and time on episodes for fast retrieval.
-- **Conflicts**: Treat patch application as transactional. If validations fail, reject and queue for review.
-- **Schema Changes**: Evolution operations are first‑class events: `type = SCHEMA_PROMOTION` with migration details.
-- **Backups & Rollback**: Snapshots + events = time travel.
+Operationally, store memory events (patches) in an append‑only table such as `MemoryEvents(userId, timestamp)` and materialize snapshots in `MemorySnapshots(userId, version)`. Index `metadata.topics`, `metadata.relatedPaths`, and timestamps on episodes for fast retrieval. Treat patch application as transactional; if validations fail, reject and queue for review. Record schema changes as first‑class events with migration details. With snapshots and events together, rollback becomes routine.
 
 ### Guardrails (a.k.a. Things We Learned The Hard Way)
 
-- Don’t over‑summarize. Keep the human phrasing in episodes—you’ll need it later.
-- Don’t over‑evolve the schema. Promotion should be rare and justified.
-- Prefer additive changes. Replace only when contradicting prior facts.
-- Keep confidence and source in the event, not just in the doc. Attribution matters.
-- Make retrieval boring. Deterministic, explainable scoring beats magical but flaky recall.
+Don’t over‑summarize; keep the human phrasing in episodes because you’ll need it later. Don’t over‑evolve the schema; promotions should be rare and justified. Prefer additive changes and reserve replacements for true contradictions. Keep confidence and source on the event as well as in the document so attribution remains clear. And make retrieval boring on purpose—deterministic, explainable scoring beats magical but flaky recall.
 
 ### Putting It All Together: A Day in the Life
 
-1. User says, “I started yoga three times a week for stress.”
-2. Extraction detects an exercise update and a stress technique.
-3. System emits two patches: add `exerciseRoutine.data.yoga`, create `stressManagement` dynamic category.
-4. Episode is saved with metadata `{topics: ['yoga','stress'], relatedPaths: [...]}`.
-5. Over time, `stressManagement` appears frequently → Schema Evolution proposes a `stressManagement` core category and migrates instances.
-6. A week later, user asks, “What helped my morning sugars?” Retrieval pulls: dawn phenomenon facts from core + episodes about protein snack before bed + insulin tweak advice. Response is grounded and personal.
+A user says, “I started yoga three times a week for stress.” Extraction detects both an exercise update and a stress technique. The system emits patches to add `exerciseRoutine.data.yoga` and create a `stressManagement` dynamic category. The sentence is stored as an episode with topics like “yoga” and “stress,” linked to the related paths. As `stressManagement` shows up more often, the evolution manager proposes promoting it to a core category and migrates existing instances. A week later, the user asks, “What helped my morning sugars?” Retrieval pulls dawn‑phenomenon facts from core plus episodes about a protein snack before bed and insulin tweak advice, producing a grounded, personal response.
 
 ### Why This Works
 
-- **Precision where it matters** (core via patches) + **richness where it helps** (episodes) + **adaptation over time** (evolution).
-- It’s debuggable, auditable, and explainable—three things you want when your system starts “remembering” things about people.
+It combines precision where it matters—core changes via patches—with richness where it helps—episodes—and adaptation over time through schema evolution. The result is debuggable, auditable, and explainable, which is exactly what you want when a system starts remembering things about people.
 
 ### Appendices
 

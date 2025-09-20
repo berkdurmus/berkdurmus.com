@@ -3,10 +3,7 @@ Building effective systems with Large Language Models (LLMs) requires careful co
 
 ### TL;DR
 
-- **Workflows** are predictable, controlled pipelines of LLM components with well-defined stages.
-- **Autonomous agents** use LLMs with tools to operate independently until success or resource exhaustion.
-- **Start with workflows** for most applications — they're more predictable and easier to reason about.
-- **Use agents sparingly** — only when tasks have uncertain paths but clear success validation.
+Workflows are predictable, controlled pipelines of LLM components with well‑defined stages. Autonomous agents, by contrast, use tools to operate independently until they either succeed or run out of budget. For most applications it’s better to start with workflows because they’re easier to reason about, and then reach for agents only when the path is uncertain but success can be validated cleanly.
 
 ### Two Approaches to LLM Architecture
 
@@ -16,30 +13,19 @@ When designing LLM-powered systems, we essentially have two architectural patter
 
 In workflow architectures, LLM components are connected in a pipeline with explicit control flow managed by application code. The system orchestrates the movement of data between components, with each LLM handling a specific, well-defined responsibility.
 
-Key characteristics:
-- **Predictable execution paths** — we control exactly how data flows through the system
-- **Clear separation of concerns** — each LLM component has a focused responsibility
-- **Easier to debug** — discrete steps can be traced and validated independently
-- **More efficient** — we only run the necessary components for each request
+Key characteristics include predictable execution paths—we control how data flows—clear separation of concerns so each component has a focused job, simpler debugging because steps can be traced in isolation, and better efficiency since only the needed components run for a given request.
 
 #### 2. Autonomous Agents
 
 Agents are LLMs given access to tools (functions they can call) and an environment that provides feedback. We define a success condition or maximum attempt limit, and the agent operates autonomously until one of those conditions is met.
 
-Key characteristics:
-- **Self-directed problem solving** — the agent determines its own path to the solution
-- **Tool-using capability** — agents interact with external systems through defined tools
-- **Dynamic execution paths** — the sequence of actions isn't predetermined
-- **Potentially higher resource usage** — agents may make multiple attempts before succeeding
+These systems solve problems more autonomously: they decide their own path, use tools to interact with other systems, and follow dynamic execution paths rather than a single predetermined sequence. The tradeoff is higher and less predictable resource usage because multiple attempts may be needed before they converge.
 
 ### My General Rule: Start With Workflows
 
-I've found that **workflows should be the default choice** for most LLM applications. They provide predictability, control, and efficiency. Only when a task meets very specific criteria do I consider an autonomous agent approach.
+I've found that workflows should be the default choice for most LLM applications. They provide predictability, control, and efficiency. Only when a task meets very specific criteria do I consider an autonomous agent approach.
 
-I implement autonomous agents only when:
-1. The task is too complex to enumerate all possible steps in advance
-2. We can clearly validate success through environmental feedback
-3. The potentially increased resource usage is acceptable
+I implement autonomous agents only when the task is too complex to enumerate steps in advance, when success can be validated through clear environmental feedback, and when the potential increase in resource usage is acceptable.
 
 ### Case Study: Playwright Debug Agent
 
@@ -73,10 +59,7 @@ While the workflow solution worked well, I contemplated whether an autonomous ag
 4. Running the test to validate the fix
 5. Iterating if needed
 
-This scenario fits the criteria for autonomous agents because:
-- The exact steps needed to fix a test depend on the specific failure
-- We can validate success by running the test and checking if it passes
-- The potential need for multiple iterations makes a workflow less practical
+This scenario fits the criteria for autonomous agents because the exact steps depend on the particular failure, success can be validated by re‑running the test, and the number of iterations is uncertain enough that a linear workflow becomes awkward.
 
 However, since we didn't have access to the test code (test.spec.ts) in this project, we couldn't implement the validation step, making an autonomous agent less appropriate.
 
@@ -104,16 +87,11 @@ In this model, an orchestrator LLM:
 2. Delegates specific tasks to worker LLMs
 3. Aggregates results and determines next steps
 
-This approach allows for more dynamic workflows while maintaining more control than a fully autonomous agent. While it was more complex than necessary for our use case (as you pointed out), it provided valuable insights into how LLMs could potentially manage their own workflows.
+This approach allows for more dynamic workflows while retaining more control than a fully autonomous agent. It was more complex than necessary for our case, but it offered useful insight into how LLMs might manage their own workflows.
 
 ### Lessons Learned
 
-Through these experiments, I've developed some principles for choosing between workflows and agents:
-
-1. **Default to workflows** for most applications
-2. **Use controlled, linear pipelines** when the stages are clear and sequential
-3. **Consider orchestrator-worker patterns** for complex but structured tasks
-4. **Reserve autonomous agents** for situations where the path is uncertain but success is verifiable
+A few principles have held up across projects. Default to workflows for most applications. Use controlled, linear pipelines when the stages are clear and sequential. Consider an orchestrator‑worker pattern for complex yet still structured tasks. Reserve autonomous agents for situations where the path is uncertain but the success condition is objective and verifiable.
 
 Perhaps most importantly, I've learned to avoid overengineering. The simplest architecture that meets requirements is almost always the best choice, and it's often simpler than we initially think.
 
