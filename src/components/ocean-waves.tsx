@@ -187,16 +187,7 @@ export function OceanWaves() {
       ctx.fillStyle = gradient;
       ctx.fill();
 
-      // Add subtle glow effect
-      ctx.shadowBlur = 20;
-      ctx.shadowColor = `rgba(${wave.color.r}, ${wave.color.g}, ${
-        wave.color.b
-      }, ${wave.opacity * 0.5})`;
-      ctx.strokeStyle = `rgba(${wave.color.r}, ${wave.color.g}, ${
-        wave.color.b
-      }, ${wave.opacity * 0.3})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
+      // Subtle glow removed to avoid any potential edge lines
       ctx.shadowBlur = 0;
     };
 
@@ -227,25 +218,10 @@ export function OceanWaves() {
   }, [isDarkMode]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 2, ease: "easeOut" }}
-      className="absolute left-0 right-0 top-[-180px] md:top-[-130px] lg:top-[-100px] w-full h-screen pointer-events-none -z-10"
-    >
-      {/* Canvas for waves */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-        style={{ opacity: isDarkMode ? 0.6 : 0.55 }}
-      />
-
-      {/* Overlay gradient for depth */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/20 dark:to-black/20" />
-
-      {/* Shimmer effect */}
+    <>
+      {/* Full-screen shimmer background behind the waves */}
       <motion.div
-        className="absolute inset-0"
+        className="fixed inset-0 pointer-events-none -z-10"
         animate={{
           background: isDarkMode
             ? [
@@ -270,61 +246,80 @@ export function OceanWaves() {
         }}
       />
 
-      {/* Subtle light rays */}
       <motion.div
-        className="absolute inset-0 overflow-hidden"
         initial={{ opacity: 0 }}
-        animate={{ opacity: isDarkMode ? 0.2 : 0.3 }}
-        transition={{ delay: 1, duration: 2 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, ease: "easeInOut" }}
+        className="absolute left-0 right-0 top-[-180px] md:top-[-130px] lg:top-[-100px] w-full h-screen overflow-hidden pointer-events-none -z-10"
       >
-        <motion.div
-          className={`absolute -top-1/2 left-1/4 w-px h-[200%] bg-gradient-to-b from-transparent ${
-            isDarkMode ? "via-blue-400/10" : "via-blue-500/15"
-          } to-transparent`}
-          animate={{
-            x: [0, 100, 0],
-            opacity: [0.2, 0.3, 0.2],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          style={{ transform: "rotate(12deg)" }}
+        {/* Canvas for waves */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full"
+          style={{ opacity: isDarkMode ? 0.6 : 0.55 }}
         />
+
+        {/* Overlay gradient for depth (transparent to avoid seams) */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-transparent" />
+
+        {/* Shimmer handled by full-screen layer above */}
+
+        {/* Subtle light rays */}
         <motion.div
-          className={`absolute -top-1/2 left-1/2 w-px h-[200%] bg-gradient-to-b from-transparent ${
-            isDarkMode ? "via-purple-400/10" : "via-purple-500/15"
-          } to-transparent`}
-          animate={{
-            x: [0, -80, 0],
-            opacity: [0.15, 0.25, 0.15],
-          }}
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 3,
-          }}
-          style={{ transform: "rotate(-8deg)" }}
-        />
-        <motion.div
-          className={`absolute -top-1/2 right-1/3 w-px h-[200%] bg-gradient-to-b from-transparent ${
-            isDarkMode ? "via-cyan-400/10" : "via-cyan-500/15"
-          } to-transparent`}
-          animate={{
-            x: [0, 60, 0],
-            opacity: [0.1, 0.2, 0.1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 5,
-          }}
-          style={{ transform: "rotate(5deg)" }}
-        />
+          className="absolute inset-0 overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isDarkMode ? 0.2 : 0.3 }}
+          transition={{ delay: 1, duration: 2 }}
+        >
+          <motion.div
+            className={`absolute -top-1/2 left-1/4 w-px h-[200%] bg-gradient-to-b from-transparent ${
+              isDarkMode ? "via-blue-400/10" : "via-blue-500/15"
+            } to-transparent`}
+            animate={{
+              x: [0, 100, 0],
+              opacity: [0.2, 0.3, 0.2],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            style={{ transform: "rotate(12deg)" }}
+          />
+          <motion.div
+            className={`absolute -top-1/2 left-1/2 w-px h-[200%] bg-gradient-to-b from-transparent ${
+              isDarkMode ? "via-purple-400/10" : "via-purple-500/15"
+            } to-transparent`}
+            animate={{
+              x: [0, -80, 0],
+              opacity: [0.15, 0.25, 0.15],
+            }}
+            transition={{
+              duration: 18,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 3,
+            }}
+            style={{ transform: "rotate(-8deg)" }}
+          />
+          <motion.div
+            className={`absolute -top-1/2 right-1/3 w-px h-[200%] bg-gradient-to-b from-transparent ${
+              isDarkMode ? "via-cyan-400/10" : "via-cyan-500/15"
+            } to-transparent`}
+            animate={{
+              x: [0, 60, 0],
+              opacity: [0.1, 0.2, 0.1],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 5,
+            }}
+            style={{ transform: "rotate(5deg)" }}
+          />
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </>
   );
 }

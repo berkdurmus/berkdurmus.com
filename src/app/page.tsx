@@ -92,7 +92,7 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9, duration: 0.8 }}
-          className="mb-20 max-w-4xl"
+          className="mb-16 max-w-4xl"
         >
           {/* Left-aligned header */}
           {/* <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-8">
@@ -106,25 +106,23 @@ export default function Home() {
             transition={{ delay: 1.0, duration: 0.5 }}
             className="space-y-10"
           >
-            <p className="text-xl md:text-2xl leading-relaxed text-gray-800 dark:text-gray-200">
-              I&apos;m a product engineer who writes code by day and debugs
-              dreams by night.
+            <p className="text-xl md:text-2xl leading-relaxed text-gray-800 dark:text-gray-200 mt-[-100px]">
+              I&apos;m a software engineer passionate about healthcare.
             </p>
 
-            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mt-6">
-              I&apos;ve co-founded 3 startups (because sleep is overrated), with
-              pulfy.com reaching 10k+ monthly paying customers in 2021. These
-              days at Center Health, I build AI workflows and agents that make
-              hundreds of thousands of patients&apos; lives easier - no
-              pressure, right?
-            </p>
+            {/* <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mt-6">
+              I’ve shipped end-to-end clinical telephony agents, EHR
+              automations, human-in-the-loop workflows, an AI diabetes coach, a
+              self-evolving layered LLM memory system, a clinical workflow
+              engine, a reinforcement-learning notification system, LLM
+              observability, CGM/device integrations, healthcare MCP servers,
+              and lots of other healthcare solutions.
+            </p> */}
 
-            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mt-6">
-              When I&apos;m not crafting clinical agents, voice call agents, or
-              MCP servers, I&apos;m probably obsessing over my latest creation:
-              Self Evolving Layered Structured Memory or fine-tuning my prompt
-              management systems.
-            </p>
+            {/* <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mt-6">
+              I co-founded pulfy.com, a travel recommendation engine startup —
+              nowadays I&apos;m focused on solving healthcare problems.
+            </p> */}
 
             <div className="grid md:grid-cols-2 gap-10 mt-8">
               <div className="space-y-3">
@@ -133,9 +131,9 @@ export default function Home() {
                   Current Obsessions
                 </h4>
                 <p className="text-base text-gray-700 dark:text-gray-300 pl-4">
-                  Building AI-driven systems including dev tools, copilots,
-                  evaluation frameworks, and memory architectures while trying
-                  not to create Skynet by accident.
+                  Recommendation engines, Reinforcement Learning, LLM Memory,
+                  LLM Observability & Guardrails, Automations and
+                  Human-in-the-loop workflows.
                 </p>
               </div>
 
@@ -145,17 +143,16 @@ export default function Home() {
                   Side Quests
                 </h4>
                 <p className="text-base text-gray-700 dark:text-gray-300 pl-4">
-                  Created Berf (my own DSL language, because the world needed
-                  one more), Playwright Debug Agent, and OpenTelemetry Agent.
+                  OpenTelemetry, Playwright, OpenSource Healthcare, SQS, Kafka
+                  and more.
                 </p>
               </div>
             </div>
 
-            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mt-6">
-              If you need me, I&apos;ll be somewhere at the intersection of
-              product, engineering, and artificial intelligence - probably
-              arguing with an LLM about the meaning of life.
-            </p>
+            {/* <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mt-6">
+              I&apos;m focused on building reliable, measurable software for
+              care teams and patients.
+            </p> */}
           </motion.div>
         </motion.section>
 
@@ -210,7 +207,7 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 0.8 }}
-          className="border-t border-gray-200 dark:border-gray-800 pt-12 max-w-4xl"
+          className="pt-12 max-w-4xl"
         >
           <SocialLinks />
 
