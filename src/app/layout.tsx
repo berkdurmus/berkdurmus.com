@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { OceanWaves } from "@/components/ocean-waves";
+import { TopBar } from "@/components/top-bar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ChatButton } from "@/components/chat/chat-button";
 import "./globals.css";
@@ -39,6 +40,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="font-sans antialiased min-h-screen bg-white dark:bg-black relative">
+        {/* Top social bar with scroll-aware visibility */}
+        <TopBar />
         <ThemeToggle />
         <ChatButton />
         <OceanWaves />

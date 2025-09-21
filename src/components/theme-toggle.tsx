@@ -7,6 +7,7 @@ import { Moon, Sun } from "lucide-react";
 export function ThemeToggle() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
+  const [topBarHiddenOnMobile, setTopBarHiddenOnMobile] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -21,6 +22,24 @@ export function ThemeToggle() {
     if (initialTheme === "dark") {
       document.documentElement.classList.add("dark");
     }
+  }, []);
+
+  // Track scroll to align with TopBar hide/show behavior on small screens
+  useEffect(() => {
+    let lastY = 0;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const delta = Math.abs(y - lastY);
+      if (delta < 8) return;
+      if (y > lastY && y > 60) {
+        setTopBarHiddenOnMobile(true);
+      } else {
+        setTopBarHiddenOnMobile(false);
+      }
+      lastY = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const toggleTheme = () => {
@@ -39,7 +58,11 @@ export function ThemeToggle() {
   // Prevent hydration mismatch
   if (!mounted) {
     return (
-      <div className="fixed top-6 right-6 md:top-8 md:right-8 z-50">
+      <div
+        className={`fixed ${
+          topBarHiddenOnMobile ? "top-6" : "top-20"
+        } right-6 sm:top-6 md:top-8 md:right-8 z-50`}
+      >
         <div className="w-12 h-12 rounded-full" />
       </div>
     );
@@ -50,7 +73,9 @@ export function ThemeToggle() {
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 0.5, duration: 0.3 }}
-      className="fixed top-6 right-6 md:top-8 md:right-8 z-50"
+      className={`fixed ${
+        topBarHiddenOnMobile ? "top-6" : "top-20"
+      } right-6 sm:top-6 md:top-8 md:right-8 z-50`}
     >
       <motion.button
         onClick={toggleTheme}

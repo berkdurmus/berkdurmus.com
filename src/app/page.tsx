@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { AnimatedText } from "@/components/animated-text";
 import { BlogCard } from "@/components/blog-card";
-import { SocialLinks } from "@/components/social-links";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { ProjectCard } from "@/components/project-card";
 import { useEffect, useState } from "react";
@@ -202,15 +201,13 @@ export default function Home() {
           </div>
         </motion.section> */}
 
-        {/* Footer with Social Links */}
+        {/* Footer */}
         <motion.footer
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 0.8 }}
           className="pt-12 max-w-4xl"
         >
-          <SocialLinks />
-
           {/* Newsletter Subscription */}
           <div className="mt-12 mb-12">
             <NewsletterForm />

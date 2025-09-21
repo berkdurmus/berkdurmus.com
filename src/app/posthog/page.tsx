@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { SocialLinks } from "@/components/social-links";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -393,7 +392,6 @@ export default function PostHogPage() {
           transition={{ delay: 2.2, duration: 0.8 }}
           className="border-t border-gray-200 dark:border-gray-800 pt-12"
         >
-          <SocialLinks />
           <motion.p className="text-center mt-12 text-sm text-gray-500 dark:text-gray-500">
             Built with ☕, 🎵, and an unhealthy amount of enthusiasm for PostHog
           </motion.p>
