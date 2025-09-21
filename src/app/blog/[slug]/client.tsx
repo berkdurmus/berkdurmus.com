@@ -17,6 +17,7 @@ import json from "highlight.js/lib/languages/json";
 import bash from "highlight.js/lib/languages/bash";
 import http from "highlight.js/lib/languages/http";
 import "highlight.js/styles/atom-one-dark.css";
+import { ReadingProgress } from "@/components/reading-progress";
 
 // Register the languages we need
 hljs.registerLanguage("typescript", typescript);
@@ -154,6 +155,7 @@ const CodeBlock = ({
 };
 
 export default function BlogPostClient({ post }: { post: BlogPost }) {
+  const articleRef = useRef<HTMLElement | null>(null);
   // Custom component to render Mermaid diagrams
   const components = {
     code({ node, inline, className, children, ...props }: any) {
@@ -225,7 +227,8 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
 
   return (
     <main className="min-h-screen">
-      <article className="max-w-3xl mx-auto px-6 py-20">
+      <ReadingProgress targetRef={articleRef} />
+      <article ref={articleRef} className="max-w-3xl mx-auto px-6 py-20">
         {/* Back link */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}

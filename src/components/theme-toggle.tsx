@@ -22,6 +22,9 @@ export function ThemeToggle() {
     if (initialTheme === "dark") {
       document.documentElement.classList.add("dark");
     }
+    try {
+      document.cookie = `theme=${initialTheme}; path=/; max-age=31536000`;
+    } catch {}
   }, []);
 
   // Track scroll to align with TopBar hide/show behavior on small screens
@@ -53,6 +56,9 @@ export function ThemeToggle() {
     }
 
     localStorage.setItem("theme", newTheme);
+    try {
+      document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
+    } catch {}
   };
 
   // Prevent hydration mismatch

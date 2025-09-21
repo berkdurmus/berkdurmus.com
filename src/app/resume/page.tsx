@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PdfViewer } from "./pdf-viewer";
 
 export const metadata: Metadata = {
   title: "Resume - Berk Durmuş",
@@ -34,13 +35,7 @@ export default function ResumePage() {
           </a>
         </div>
 
-        <div className="mt-6 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-sm">
-          <iframe
-            src="/resume/file"
-            className="w-full h-[75vh] sm:h-[80vh]"
-            title="Berk Durmuş Resume"
-          />
-        </div>
+        <PdfViewer />
 
         <div className="mt-4 text-center">
           <a

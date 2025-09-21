@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Inter } from "next/font/google";
 import { OceanWaves } from "@/components/ocean-waves";
 import { TopBar } from "@/components/top-bar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ChatButton } from "@/components/chat/chat-button";
 import "./globals.css";
+import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -37,9 +39,25 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const themeCookie = cookies().get("theme")?.value;
+  const themeClass = themeCookie === "dark" ? "dark" : "";
   return (
-    <html lang="en" className={inter.variable}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${themeClass}`}
+      suppressHydrationWarning
+    >
       <body className="font-sans antialiased min-h-screen bg-white dark:bg-black relative">
+        <Script id="theme-init" strategy="beforeInteractive">{`
+          (function(){
+            try {
+              var saved = localStorage.getItem('theme');
+              var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+              var theme = saved || (prefersDark ? 'dark' : 'light');
+              if (theme === 'dark') document.documentElement.classList.add('dark');
+            } catch(_) {}
+          })();
+        `}</Script>
         {/* Top social bar with scroll-aware visibility */}
         <TopBar />
         <ThemeToggle />

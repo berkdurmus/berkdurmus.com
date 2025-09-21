@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent light flash on dark-preferring systems before JS runs */
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background-color: #000; /* fallback until dark class is applied */
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
