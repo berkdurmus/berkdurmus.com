@@ -25,7 +25,7 @@ export function PdfViewer() {
         </div>
       )}
       <iframe
-        src="/resume/file"
+        src="/resume/Berk-Durmus_resume.pdf"
         className={`w-full h-[75vh] sm:h-[80vh] transition-opacity duration-300 ${
           loaded ? "opacity-100" : "opacity-0"
         }`}

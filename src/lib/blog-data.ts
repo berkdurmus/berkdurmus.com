@@ -68,6 +68,13 @@ export const blogPosts = [
     readingTime: "Impossible to Read all" as const,
     description: "Turning Chat Fragments into a Living Knowledge System",
   },
+  {
+    title: "Code Is the Plan: Treating Commits as Tasks",
+    slug: "code-is-the-plan-treating-commits-as-tasks",
+    date: "May 2025",
+    readingTime: "Quick to Read" as const,
+    description: "Ship faster by making each commit a tiny, verifiable plan",
+  },
 ];
 
 // Function to get blog post metadata by slug
