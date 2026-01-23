@@ -158,7 +158,7 @@ export default function Home() {
               <span className="text-gray-900 dark:text-gray-100">
                 I&apos;m{" "}
               </span>
-              <span className="gradient-text">Berk</span>
+              <span className="gradient-text">Berok</span>
             </h2>
             <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 -mt-12">
               Istanbul, Turkey · Senior Product Engineer, AI
