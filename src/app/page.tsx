@@ -158,7 +158,7 @@ export default function Home() {
               <span className="text-gray-900 dark:text-gray-100">
                 I&apos;m{" "}
               </span>
-              <span className="gradient-text">Berk</span>
+              <span className="gradient-text">Engineer</span>
             </h2>
             <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 -mt-12">
               Istanbul, Turkey · Senior Product Engineer, AI
@@ -194,15 +194,12 @@ export default function Home() {
             className="space-y-10"
           >
             <p className="text-xl md:text-2xl leading-relaxed text-gray-800 dark:text-gray-200 mt-[-100px]">
-              I take ideas from zero to production. Right now I&apos;m building
-              AI features at a health tech company: LLM agents, Playwright-based
-              monitoring, and RAG pipelines. Before that, I co-founded a travel
-              startup and grew it to 7K paying users.
+              I take ideas from zero to production.&nbsp;
             </p>
 
             <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
               I spend weekends building browser extensions and open source dev
-              tools. MS in Machine Learning from TU Wien.
+              tools. MS in Machine Learning from TU Wien.&nbsp;
             </p>
 
             <div className="grid md:grid-cols-2 gap-10 mt-8">
