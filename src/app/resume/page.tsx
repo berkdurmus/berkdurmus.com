@@ -21,7 +21,7 @@ export default function ResumePage() {
         <div className="mt-4 flex items-center justify-end gap-3 sm:hidden">
           <a
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
-            href="/resume/Berk_Durmus_Resume.pdf"
+            href="/resume/Berk-Durmus_resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -29,7 +29,7 @@ export default function ResumePage() {
           </a>
           <a
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
-            href="/resume/Berk_Durmus_Resume.pdf"
+            href="/resume/Berk-Durmus_resume.pdf"
             download
           >
             Download
@@ -41,7 +41,7 @@ export default function ResumePage() {
         <div className="mt-4 text-center">
           <a
             className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
-            href="/resume/Berk_Durmus_Resume.pdf"
+            href="/resume/Berk-Durmus_resume.pdf"
             download
           >
             Download PDF
