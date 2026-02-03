@@ -1,17 +1,52 @@
-First principles thinking is the habit of dissolving a problem into the smallest statements you are willing to defend with evidence, then rebuilding the solution from those primitives instead of from precedent. It is slower for the first hour and faster for every hour after. It avoids cleverness and sentimental attachment to the status quo. You start by asking what must be true for this problem to exist at all, and what must be true for it to go away.
+First principles thinking is the habit of dissolving a problem into the smallest statements you’re willing to defend with evidence, then rebuilding from those primitives instead of from precedent.
 
-A useful exercise is to write two lists. The first is everything believed about the problem: constraints, user behavior, technical realities, business pressures. The second is a ruthless audit: for each belief, what is the evidence, how recent is it, and what would falsify it? If a belief cannot be defended, it is not a constraint—it is an assumption. Most thorny projects get easier the moment those two piles are separated.
+It usually feels slower at the start because you’re refusing to borrow certainty. You don’t get to say “that’s just how we do it” and move on. (I still catch myself reaching for that line when I’m tired or trying to look decisive.) The point isn’t to be original; it’s to be honest about what you *know* versus what you’ve inherited.
 
-Consider a concrete case. A clinic struggles to process prescription refill requests within 48 hours. Stakeholders blame “not enough staff” and ask for headcount. Using first principles, we avoid solutions for a moment and ask: what is the invariant we actually care about? It’s not tickets closed. It is the time from patient request to safe fulfillment, under policy, with clear communication. What are the irreducibles? A request must be captured, safety checks must run, a clinician must authorize when required, the patient must be notified, and the EHR must stay the source of truth. Everything else is negotiable.
+A practical exercise: write two lists.
 
-We then test the popular beliefs. “Not enough staff.” How many requests arrive per hour by daypart? What percent are auto-approvable by protocol? How long do the top three steps actually take (measured, not guessed)? “The EHR is slow.” Slow where—API latency, human navigation, or policy wait time? “Patients call because they can’t use the app.” Which flows do they actually fail on? With instrumentation, we discover 60% of requests follow a simple pattern that does not require a clinician, only a protocol check (med on file, recent labs ok, no contraindications, within refill window). We also find the true bottleneck is batching: requests sit in a queue until someone has “time,” then get processed in lumps. Lead time is long not because touch time is long, but because we wait.
+The first is everything believed about the problem—constraints, user behavior, technical realities, business pressures. The second is a ruthless audit: for each belief, what’s the evidence, how recent is it, and what would falsify it? If a belief can’t be defended, it isn’t a constraint. It’s an assumption wearing a name tag.
 
-Now we rebuild from the primitives. If safety checks are protocolized, we can encode them as data: a small ruleset that evaluates EHR facts and yields one of three decisions—approve, deny with reason, or escalate. If authorization is sometimes required, we can ask for it in parallel with gathering any missing facts, not after. If the queue is the enemy, we push toward flow: event-driven intake that evaluates requests immediately and either auto-fulfills or notifies the on-call with a single-click approve/deny. If communication reduces repeat contacts, we send the patient a timestamped status with the next expected change (“your refill met all criteria, pharmacy notified at 14:32”). None of these choices require new headcount. They require disentangling the work and removing idle time.
+This matters because teams quietly treat “we tried that before,” “legal won’t allow it,” or “our users don’t do X” as physics. Sometimes it *is* physics. Often it’s just old trauma.
 
-The final system is boring: a small service ingests requests, fetches the minimum EHR fields, runs deterministic checks, and emits a decision. Escalations go to a focused inbox with the exact missing fact highlighted and a one-tap action. Everything is logged as facts, not free text: rule versions, inputs, outcomes, and who changed what. We measure cycle time per path and alert on drift. The result is a median turnaround under four hours without a single heroic all-nighter. If policy changes, we change the ruleset and get an audit trail for free.
+Consider a concrete case. A clinic struggles to process prescription refill requests within 48 hours. Requests arrive through a messy mix: patient portal messages, pharmacy faxes, phone calls, voicemails that someone transcribes, and the occasional walk‑in “I’m out today.” The story becomes: “we need more staff.”
 
-This same approach works outside healthcare. When an engineering team says a feature “will take weeks,” break it into provable units: what must be built for a single happy path to be real for a real user? What can be stubbed? What can be deferred without lying to the user? What decisions can the system make deterministically so humans review only the ambiguous parts? First principles do not mean reinventing wheels; they mean refusing to carry assumptions you cannot justify. You can still use frameworks and best practices—you simply earn each one on purpose.
+Using first principles, we avoid solutions for a moment and ask: what’s the invariant we actually care about? It’s not “tickets closed.” It’s time from patient request to *safe* fulfillment, under policy, with clear communication. What are the irreducibles?
 
-A good litmus test is whether you can explain the whole solution as a series of if-this-then-that statements grounded in facts about the world, not in your tooling. “If the medication is chronic, labs are within range, and no new contraindications exist, then auto-approve and notify; else escalate with the missing fact.” This is legible to clinicians, product managers, auditors, and engineers. If your explanation instead depends on “that’s how we’ve always done it” or “the system won’t let us,” you are living downstream of assumptions you haven’t examined yet.
+- A request has to be captured somewhere reliable.
+- Safety checks have to happen.
+- A clinician has to authorize when policy says so.
+- The patient has to be told what’s happening.
+- The EHR stays the source of truth.
 
-Practically, the habit is simple. Write the primitives. Kill the ones you can’t defend. Measure the world where you can. Rebuild the solution as the shortest chain of cause and effect that achieves the invariant you care about. Only then choose tools. Only then add polish. If you are lucky, you will discover that the most reliable solutions are the ones that look obvious in hindsight—because all the invisible assumptions have been burned away.
+Everything else is negotiable.
+
+Now test the popular beliefs with measurement instead of vibes.
+
+“Not enough staff.” How many requests arrive per hour by daypart? What portion are routine chronic meds with stable labs? How long do the top three steps actually take (timed, not guessed)? “The EHR is slow.” Slow where—waiting on information, clicking through five screens, or the policy that says you can’t refill without a recent visit? “Patients call because they can’t use the app.” Which screens do they fail on—and what are they trying to do when they give up?
+
+When you do that audit, you often find two boring truths. First, a majority of requests follow a repeatable pattern: medication on file, no new contraindications, refill window is valid, and required labs/vitals are in range. Second, the real bottleneck isn’t touch time. It’s waiting. Requests sit in a pile until someone has “a block of time,” then get processed in a batch. Lead time balloons because the queue does.
+
+Now rebuild from the primitives.
+
+If the safety checks are protocolized, turn them into something explicit: a small checklist/ruleset that reads EHR facts and yields one of three outcomes—approve, deny with a reason, or escalate. If authorization is sometimes required, ask for it *in parallel* with gathering missing facts, not after. And if the queue is the enemy, stop feeding it: evaluate each request as it arrives so routine cases move immediately and ambiguous cases get surfaced early.
+
+Communication is part of the system, not a courtesy. A timestamped status (“received,” “needs one thing,” “sent to pharmacy”) often reduces repeat calls because it removes uncertainty. People don’t call because they love phone trees; they call because silence is scary.
+
+The resulting system is intentionally unglamorous: a thin workflow that ingests a request, pulls only the minimum EHR fields needed for the protocol, runs deterministic checks, and records a decision. Escalations land in a focused inbox that highlights the *one missing fact* (e.g., “last A1C is over a year old”) with a one‑tap action. Logs are facts, not essays: which rule version ran, what inputs it saw, what it output, and who overrode it.
+
+Outside healthcare, the same move works almost everywhere. When a team says a feature “will take weeks,” first principles asks a different set of questions:
+
+- What must be true for one real user to complete one real happy path?
+- What can be stubbed without lying?
+- Where can the system decide deterministically so humans only review ambiguity?
+- Are we waiting on work, or waiting on *information*?
+
+First principles doesn’t mean reinventing wheels. It means refusing to carry assumptions you can’t justify.
+
+A good litmus test: can you explain the solution as simple if‑this‑then‑that statements grounded in the world, not your tooling?
+
+“If the medication is chronic, labs are within range, and there are no new contraindications, then approve and notify; otherwise escalate with the missing fact.” A clinician can read that. An auditor can read that. An engineer can build that. If your explanation depends on “that’s how we’ve always done it” or “the system won’t let us,” you’re living downstream of assumptions you haven’t examined yet.
+
+Practically, the habit is simple: write the primitives, delete the ones you can’t defend, measure where reality disagrees with your story, then rebuild the shortest chain of cause and effect that achieves the invariant you care about.
+
+Only then choose tools. Otherwise you’re just adding polish to a superstition.
