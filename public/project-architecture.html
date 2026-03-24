@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blue Health — Architecture</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 2rem;
+        background: #f8f7f4;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #1a1a18;
+        }
+      }
+      :root {
+        --bg1: #ffffff;
+        --bg2: #f5f4f0;
+        --tx1: #1a1a18;
+        --tx2: #6e6d68;
+        --tx3: #9c9a92;
+        --bd1: rgba(0, 0, 0, 0.15);
+        --bd2: rgba(0, 0, 0, 0.1);
+        --bg-danger: rgba(226, 75, 74, 0.1);
+        --tx-danger: #a32d2d;
+        --bg-warn: rgba(186, 117, 23, 0.1);
+        --tx-warn: #854f0b;
+        --bg-info: rgba(55, 138, 221, 0.1);
+        --tx-info: #185fa5;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg1: #2c2c2a;
+          --bg2: #1a1a18;
+          --tx1: #e8e6de;
+          --tx2: #9c9a92;
+          --tx3: #73726c;
+          --bd1: rgba(255, 255, 255, 0.15);
+          --bd2: rgba(255, 255, 255, 0.1);
+          --bg-danger: rgba(226, 75, 74, 0.15);
+          --tx-danger: #f09595;
+          --bg-warn: rgba(186, 117, 23, 0.15);
+          --tx-warn: #fac775;
+          --bg-info: rgba(55, 138, 221, 0.15);
+          --tx-info: #85b7eb;
+        }
+      }
+      .bx {
+        position: absolute;
+        border-radius: 8px;
+        padding: 6px 10px;
+        border: 0.5px solid var(--bd1);
+        background: var(--bg1);
+        z-index: 2;
+        overflow: hidden;
+      }
+      .bx::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--ac);
+        border-radius: 8px 0 0 8px;
+      }
+      .bx .t {
+        font-weight: 500;
+        font-size: 12px;
+        color: var(--tx1);
+        white-space: nowrap;
+      }
+      .bx .s {
+        font-size: 10px;
+        color: var(--tx2);
+        margin-top: 1px;
+        line-height: 1.3;
+      }
+      .nc {
+        position: absolute;
+        border: 1.5px dashed var(--bd1);
+        border-radius: 12px;
+        z-index: 1;
+      }
+      .lb {
+        position: absolute;
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 0.07em;
+        color: var(--tx3);
+        z-index: 3;
+        text-transform: uppercase;
+      }
+      .ex {
+        position: absolute;
+        font-size: 9px;
+        font-family: "SF Mono", Monaco, Consolas, monospace;
+        color: var(--tx2);
+        z-index: 3;
+        white-space: nowrap;
+      }
+      .bg {
+        position: absolute;
+        font-size: 7px;
+        font-weight: 600;
+        padding: 1px 5px;
+        border-radius: 3px;
+        z-index: 4;
+        pointer-events: none;
+        letter-spacing: 0.02em;
+      }
+      .bg.h {
+        background: var(--bg-danger);
+        color: var(--tx-danger);
+      }
+      .bg.m {
+        background: var(--bg-warn);
+        color: var(--tx-warn);
+      }
+      .bg.l {
+        background: var(--bg-info);
+        color: var(--tx-info);
+      }
+      .pills {
+        position: absolute;
+        display: flex;
+        gap: 3px;
+        flex-wrap: wrap;
+        z-index: 3;
+      }
+      .pills span {
+        font-size: 8px;
+        padding: 2px 5px;
+        border-radius: 3px;
+        background: var(--bg2);
+        color: var(--tx2);
+        font-family: "SF Mono", Monaco, Consolas, monospace;
+      }
+      #cv {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+      .ctrl {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0 2px;
+      }
+      .ctrl button {
+        font-size: 11px;
+        padding: 4px 14px;
+        border-radius: 6px;
+        border: 0.5px solid var(--bd1);
+        background: var(--bg1);
+        color: var(--tx2);
+        cursor: pointer;
+      }
+      .ctrl button:hover {
+        background: var(--bg2);
+      }
+      .legend {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        padding: 4px 0;
+        font-size: 10px;
+        color: var(--tx3);
+      }
+      .legend i {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 3px;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div id="r" style="position: relative; width: 680px; height: 800px">
+        <canvas id="cv"></canvas>
+      </div>
+      <div class="ctrl">
+        <button
+          id="pb"
+          onclick="
+            paused = !paused;
+            this.textContent = paused ? 'Play' : 'Pause';
+          "
+        >
+          Pause
+        </button>
+        <span style="font-size: 11px; color: var(--tx3)">Speed</span>
+        <input
+          type="range"
+          min="0.2"
+          max="3"
+          step="0.1"
+          value="1"
+          id="sp"
+          style="flex: 0 0 90px"
+        />
+      </div>
+      <div class="legend">
+        <span><i style="background: #378add"></i>FHIR / labs (quarterly)</span>
+        <span
+          ><i style="background: #1d9e75"></i>Wearables — 117K+ raw readings
+          in</span
+        >
+        <span
+          ><i style="background: #0f6e56"></i>Aggregated out (~180
+          rows/6mo)</span
+        >
+        <span><i style="background: #d85a30"></i>File uploads</span>
+        <span><i style="background: #7f77dd"></i>EHR / reference</span>
+        <span><i style="background: #ba7517"></i>Ingestion inbound</span>
+      </div>
+    </div>
+    <script>
+      const r = document.getElementById("r"),
+        cv = document.getElementById("cv");
+      const W = 680,
+        H = 800,
+        dpr = window.devicePixelRatio || 1;
+      cv.width = W * dpr;
+      cv.height = H * dpr;
+      cv.style.width = W + "px";
+      cv.style.height = H + "px";
+      const ctx = cv.getContext("2d");
+      ctx.scale(dpr, dpr);
+      let paused = false;
+
+      const bxData = [
+        [
+          "s1",
+          14,
+          18,
+          120,
+          42,
+          "FHIR bundles",
+          "Labcorp, Quest, Biograph",
+          "#378ADD",
+        ],
+        [
+          "s2",
+          144,
+          18,
+          120,
+          42,
+          "Wearable APIs",
+          "Oura, Watch, CGM",
+          "#1D9E75",
+        ],
+        ["s3", 274, 18, 120, 42, "File uploads", "CSV, PDF, JSON", "#D85A30"],
+        [
+          "s4",
+          404,
+          18,
+          120,
+          42,
+          "EHR exports",
+          "Elation, Epic, C-CDA",
+          "#7F77DD",
+        ],
+        ["s5", 534, 18, 132, 42, "Webhooks", "Real-time pushes", "#BA7517"],
+        [
+          "raw",
+          190,
+          80,
+          180,
+          44,
+          "1. Raw intake",
+          "Store original immutably",
+          "#378ADD",
+        ],
+        [
+          "rs",
+          500,
+          80,
+          166,
+          50,
+          "Raw store",
+          "JSONB + S3 refs, immutable",
+          "#D85A30",
+        ],
+        [
+          "parse",
+          190,
+          142,
+          180,
+          44,
+          "2. Parse",
+          "Source-specific adapters",
+          "#639922",
+        ],
+        [
+          "valid",
+          190,
+          204,
+          180,
+          44,
+          "3. Validate",
+          "Ranges, status, nulls",
+          "#D85A30",
+        ],
+        ["n4a", 40, 272, 240, 28, "4a. Patient refs", "", "#7F77DD"],
+        ["n4b", 40, 306, 240, 28, "4b. Code mapping", "", "#7F77DD"],
+        ["n4c", 40, 340, 240, 28, "4c. Units", "", "#7F77DD"],
+        ["n4d", 40, 374, 240, 28, "4d. Qualitative", "", "#7F77DD"],
+        ["n4e", 40, 408, 240, 28, "4e. Timestamps", "", "#7F77DD"],
+        [
+          "ded",
+          190,
+          458,
+          180,
+          44,
+          "5. Dedup + conflict",
+          "Fingerprint + flag",
+          "#BA7517",
+        ],
+        [
+          "sto",
+          190,
+          520,
+          180,
+          44,
+          "6. Store",
+          "Route to correct layer",
+          "#1D9E75",
+        ],
+        [
+          "obs",
+          20,
+          592,
+          198,
+          56,
+          "Observations",
+          "Postgres: labs, vitals, genomics",
+          "#378ADD",
+        ],
+        [
+          "ts",
+          238,
+          592,
+          198,
+          56,
+          "Time-series",
+          "TimescaleDB: HR, HRV, SpO2, CGM",
+          "#1D9E75",
+        ],
+        [
+          "ref",
+          456,
+          592,
+          210,
+          56,
+          "Reference data",
+          "Codes, domains, panels, sources",
+          "#7F77DD",
+        ],
+        [
+          "a1",
+          20,
+          676,
+          198,
+          50,
+          "/v1/patients/...",
+          "Standard: frontend/mobile",
+          "#378ADD",
+        ],
+        [
+          "a2",
+          238,
+          676,
+          198,
+          50,
+          "/v1/ai/patients/...",
+          "AI: LLM agent retrieval",
+          "#7F77DD",
+        ],
+        [
+          "a3",
+          456,
+          676,
+          210,
+          50,
+          "/v1/ingestion/...",
+          "FHIR, upload, webhook",
+          "#BA7517",
+        ],
+        [
+          "fe",
+          20,
+          754,
+          198,
+          42,
+          "Frontend (Greg)",
+          "Web + mobile, timeline",
+          "#378ADD",
+        ],
+        [
+          "ai",
+          238,
+          754,
+          198,
+          42,
+          "AI agents (Michael)",
+          "Clinical reasoning",
+          "#7F77DD",
+        ],
+        [
+          "ex",
+          456,
+          754,
+          210,
+          42,
+          "External sources",
+          "Oura API, EHR, lab feeds",
+          "#BA7517",
+        ],
+      ];
+      bxData.forEach((b) => {
+        const [id, x, y, w, h, t, s, c] = b;
+        const d = document.createElement("div");
+        d.className = "bx";
+        d.style.cssText = `left:${x}px;top:${y}px;width:${w}px;height:${h}px;--ac:${c}`;
+        d.innerHTML = `<div class="t">${t}</div>${s ? `<div class="s">${s}</div>` : ""}`;
+        r.appendChild(d);
+      });
+
+      const nc = document.createElement("div");
+      nc.className = "nc";
+      nc.style.cssText = "left:20px;top:254px;width:640px;height:192px";
+      r.appendChild(nc);
+
+      [
+        [14, 4, "data sources"],
+        [14, 68, "ingestion pipeline"],
+        [30, 242, "4. normalize — must happen before dedup"],
+        [14, 576, "storage layers — single postgres instance"],
+        [14, 662, "api layer — consumer-aware dual surface"],
+        [14, 740, "consumers"],
+      ].forEach(([x, y, t]) => {
+        const d = document.createElement("div");
+        d.className = "lb";
+        d.style.cssText = `left:${x}px;top:${y}px`;
+        d.textContent = t;
+        r.appendChild(d);
+      });
+
+      [
+        [300, 278, "Patient/patient-001 → canonical ID"],
+        [300, 312, "LOINC 2339-0 → GLUCOSE"],
+        [300, 346, "5.38 mmol/L → 97 mg/dL"],
+        [300, 380, '"<1.0 NEG" → < | 1.0 | NEG'],
+        [300, 414, "mixed formats → UTC"],
+      ].forEach(([x, y, t]) => {
+        const d = document.createElement("div");
+        d.className = "ex";
+        d.style.cssText = `left:${x}px;top:${y}px`;
+        d.textContent = t;
+        r.appendChild(d);
+      });
+
+      [
+        [258, 266, "LOW", "l"],
+        [258, 300, "MED-HI", "m"],
+        [258, 334, "HIGH", "h"],
+        [348, 452, "HIGH", "h"],
+        [414, 586, "MED", "m"],
+        [456, 586, "HIGH", "h"],
+      ].forEach(([x, y, t, c]) => {
+        const d = document.createElement("div");
+        d.className = "bg " + c;
+        d.style.cssText = `left:${x}px;top:${y}px`;
+        d.textContent = t;
+        r.appendChild(d);
+      });
+
+      const tsLabel = document.createElement("div");
+      tsLabel.className = "ex";
+      tsLabel.style.cssText =
+        "left:242px;top:650px;color:var(--tx3);font-size:8px";
+      tsLabel.textContent = "continuous aggregates: hourly + daily";
+      r.appendChild(tsLabel);
+
+      const cgLabel = document.createElement("div");
+      cgLabel.className = "ex";
+      cgLabel.style.cssText =
+        "left:498px;top:586px;color:var(--tx3);font-size:8px";
+      cgLabel.textContent = "clinical grouping";
+      r.appendChild(cgLabel);
+
+      const pl1 = document.createElement("div");
+      pl1.className = "pills";
+      pl1.style.cssText = "left:380px;top:148px;width:160px";
+      pl1.innerHTML =
+        "<span>FHIR</span><span>Oura</span><span>CSV</span><span>Biomarker</span><span>EHR</span>";
+      r.appendChild(pl1);
+
+      const pl2 = document.createElement("div");
+      pl2.className = "pills";
+      pl2.style.cssText = "left:380px;top:464px;width:180px";
+      pl2.innerHTML =
+        "<span>skip dup</span><span>flag conflict</span><span>new obs</span>";
+      r.appendChild(pl2);
+
+      const midPipe = [
+        [280, 124],
+        [280, 142],
+        [280, 186],
+        [280, 204],
+        [280, 248],
+        [160, 272],
+        [160, 300],
+        [160, 306],
+        [160, 334],
+        [160, 340],
+        [160, 368],
+        [160, 374],
+        [160, 402],
+        [160, 408],
+        [160, 436],
+        [280, 458],
+        [280, 502],
+        [280, 520],
+        [280, 564],
+      ];
+
+      function mkPath(src, end) {
+        return [src, [280, 80], ...midPipe, ...end];
+      }
+
+      // --- INGEST paths: sources → pipeline → storage ---
+      // Labs land in Observations
+      const pLabsToObs = mkPath([74, 60], [[119, 592]]);
+      // Wearables land in TimescaleDB (HIGH frequency — these are the dense streams)
+      const pWearToTS1 = mkPath([204, 60], [[337, 592]]);
+      const pWearToTS2 = mkPath([204, 60], [[337, 592]]);
+      const pWearToTS3 = mkPath([204, 60], [[337, 592]]);
+      // Files land in Observations
+      const pFileToObs = mkPath([334, 60], [[119, 592]]);
+      // EHR lands in Observations
+      const pEHRToObs = mkPath([464, 60], [[119, 592]]);
+
+      // --- SERVE paths: storage → API → consumers (AFTER aggregation) ---
+      // Observations → Standard API → Frontend
+      const pObsToStd = [
+        [119, 648],
+        [119, 676],
+        [119, 726],
+        [119, 754],
+      ];
+      // Observations → AI API → AI Agents (cross-feed)
+      const pObsToAI = [
+        [119, 648],
+        [337, 676],
+        [337, 726],
+        [337, 754],
+      ];
+      // TimescaleDB → Standard API → Frontend (AGGREGATED — sparse, bigger particles)
+      const pTStoStd = [
+        [337, 648],
+        [119, 676],
+        [119, 726],
+        [119, 754],
+      ];
+      // TimescaleDB → AI API → AI Agents (AGGREGATED — sparse, bigger particles)
+      const pTStoAI = [
+        [337, 648],
+        [337, 676],
+        [337, 726],
+        [337, 754],
+      ];
+
+      // --- Supporting paths ---
+      const pRaw = [
+        [370, 102],
+        [500, 105],
+      ];
+      const pExtUp = [
+        [561, 754],
+        [561, 726],
+      ];
+      const pIngest = [
+        [561, 676],
+        [674, 676],
+        [674, 80],
+        [370, 80],
+      ];
+      const pRef = [
+        [340, 542],
+        [561, 592],
+      ];
+      // Reference Data → both API surfaces (domains, panels, codes on every call)
+      const pRefToStd = [
+        [561, 636],
+        [119, 676],
+      ];
+      const pRefToAI = [
+        [561, 636],
+        [337, 676],
+      ];
+
+      const flows = [
+        // === INGEST: dense wearable streams INTO TimescaleDB ===
+        {
+          path: pWearToTS1,
+          color: "rgba(29,158,117,0.9)",
+          rate: 280,
+          speed: 1.8,
+          sz: 2,
+        },
+        {
+          path: pWearToTS2,
+          color: "rgba(29,158,117,0.65)",
+          rate: 350,
+          speed: 1.7,
+          sz: 1.6,
+        },
+        {
+          path: pWearToTS3,
+          color: "rgba(29,158,117,0.45)",
+          rate: 300,
+          speed: 2.0,
+          sz: 1.3,
+        },
+
+        // === SERVE: sparse aggregated OUT of TimescaleDB (darker teal, bigger, slow) ===
+        {
+          path: pTStoStd,
+          color: "rgba(15,110,86,0.9)",
+          rate: 2800,
+          speed: 0.9,
+          sz: 3.5,
+        },
+        {
+          path: pTStoAI,
+          color: "rgba(15,110,86,0.75)",
+          rate: 3600,
+          speed: 0.85,
+          sz: 3,
+        },
+
+        // === Labs: normal rate in, normal rate out ===
+        {
+          path: pLabsToObs,
+          color: "rgba(55,138,221,0.85)",
+          rate: 2200,
+          speed: 1.3,
+          sz: 3,
+        },
+        {
+          path: pObsToStd,
+          color: "rgba(55,138,221,0.8)",
+          rate: 2400,
+          speed: 1.0,
+          sz: 3,
+        },
+        {
+          path: pObsToAI,
+          color: "rgba(55,138,221,0.55)",
+          rate: 4800,
+          speed: 0.95,
+          sz: 2.5,
+        },
+
+        // Files, EHR
+        {
+          path: pFileToObs,
+          color: "rgba(216,90,48,0.8)",
+          rate: 3200,
+          speed: 1.1,
+          sz: 3,
+        },
+        {
+          path: pEHRToObs,
+          color: "rgba(127,119,221,0.75)",
+          rate: 4200,
+          speed: 1.0,
+          sz: 3,
+        },
+
+        // Raw store branch
+        {
+          path: pRaw,
+          color: "rgba(160,158,150,0.45)",
+          rate: 600,
+          speed: 0.9,
+          sz: 2,
+        },
+        // Ingestion loop
+        {
+          path: pExtUp,
+          color: "rgba(186,117,23,0.7)",
+          rate: 2800,
+          speed: 0.9,
+          sz: 2.5,
+        },
+        {
+          path: pIngest,
+          color: "rgba(186,117,23,0.55)",
+          rate: 3800,
+          speed: 1.5,
+          sz: 2.5,
+        },
+        // Reference data into storage
+        {
+          path: pRef,
+          color: "rgba(127,119,221,0.35)",
+          rate: 5500,
+          speed: 0.7,
+          sz: 2,
+        },
+        // === Reference Data → API (taxonomy, domains, panels, codes — hit on most API calls) ===
+        {
+          path: pRefToStd,
+          color: "rgba(127,119,221,0.7)",
+          rate: 1800,
+          speed: 0.8,
+          sz: 2.5,
+        },
+        {
+          path: pRefToAI,
+          color: "rgba(127,119,221,0.55)",
+          rate: 2400,
+          speed: 0.75,
+          sz: 2.2,
+        },
+      ];
+
+      const MAX_P = 300;
+      let particles = [];
+      flows.forEach((f) => {
+        f.timer = Math.random() * f.rate;
+      });
+
+      function pLen(p) {
+        let l = 0;
+        for (let i = 1; i < p.length; i++) {
+          const dx = p[i][0] - p[i - 1][0],
+            dy = p[i][1] - p[i - 1][1];
+          l += Math.sqrt(dx * dx + dy * dy);
+        }
+        return l;
+      }
+      function pPos(path, dist) {
+        let rem = dist;
+        for (let i = 1; i < path.length; i++) {
+          const dx = path[i][0] - path[i - 1][0],
+            dy = path[i][1] - path[i - 1][1],
+            s = Math.sqrt(dx * dx + dy * dy);
+          if (rem <= s) {
+            const t = rem / s;
+            return [path[i - 1][0] + dx * t, path[i - 1][1] + dy * t];
+          }
+          rem -= s;
+        }
+        return path[path.length - 1];
+      }
+
+      class Pt {
+        constructor(f) {
+          this.p = f.path;
+          this.c = f.color;
+          this.sp = f.speed;
+          this.sz = f.sz;
+          this.pos = 0;
+          this.len = pLen(this.p);
+          this.dead = false;
+          this.trail = [];
+          this.maxTrail = 6;
+        }
+        update(m) {
+          this.pos += this.sp * m;
+          if (this.pos >= this.len) this.dead = true;
+          const xy = pPos(this.p, this.pos);
+          this.trail.push(xy);
+          if (this.trail.length > this.maxTrail) this.trail.shift();
+          this.xy = xy;
+        }
+        draw(cx) {
+          if (this.trail.length > 1) {
+            for (let i = 1; i < this.trail.length; i++) {
+              const a = this.trail[i - 1],
+                b = this.trail[i];
+              const op = 0.08 + (i / this.trail.length) * 0.22;
+              cx.beginPath();
+              cx.moveTo(a[0], a[1]);
+              cx.lineTo(b[0], b[1]);
+              cx.strokeStyle = this.c.replace(/[\d.]+\)$/, op + ")");
+              cx.lineWidth = this.sz * 1.2;
+              cx.lineCap = "round";
+              cx.stroke();
+            }
+          }
+          cx.beginPath();
+          cx.arc(this.xy[0], this.xy[1], this.sz + 1, 0, Math.PI * 2);
+          cx.fillStyle = this.c.replace(/[\d.]+\)$/, "0.15)");
+          cx.fill();
+          cx.beginPath();
+          cx.arc(this.xy[0], this.xy[1], this.sz, 0, Math.PI * 2);
+          cx.fillStyle = this.c;
+          cx.fill();
+        }
+      }
+
+      function drawArr(cx, a, b) {
+        const ang = Math.atan2(b[1] - a[1], b[0] - a[0]),
+          l = 5;
+        cx.beginPath();
+        cx.moveTo(b[0], b[1]);
+        cx.lineTo(
+          b[0] - l * Math.cos(ang - 0.45),
+          b[1] - l * Math.sin(ang - 0.45),
+        );
+        cx.moveTo(b[0], b[1]);
+        cx.lineTo(
+          b[0] - l * Math.cos(ang + 0.45),
+          b[1] - l * Math.sin(ang + 0.45),
+        );
+        cx.stroke();
+      }
+      function ln(cx, a, b) {
+        cx.beginPath();
+        cx.moveTo(a[0], a[1]);
+        cx.lineTo(b[0], b[1]);
+        cx.stroke();
+        drawArr(cx, a, b);
+      }
+      function plArr(cx, pts) {
+        cx.beginPath();
+        cx.moveTo(pts[0][0], pts[0][1]);
+        for (let i = 1; i < pts.length; i++) cx.lineTo(pts[i][0], pts[i][1]);
+        cx.stroke();
+        drawArr(cx, pts[pts.length - 2], pts[pts.length - 1]);
+      }
+
+      function drawConns(cx) {
+        cx.lineWidth = 0.8;
+        cx.lineCap = "round";
+        cx.strokeStyle = "rgba(140,138,132,0.22)";
+        // Sources → Raw intake
+        [
+          [74, 60],
+          [204, 60],
+          [334, 60],
+          [464, 60],
+          [600, 60],
+        ].forEach((s) => ln(cx, s, [280, 80]));
+        // Raw intake → Raw store
+        ln(cx, [370, 102], [500, 105]);
+        // Pipeline vertical
+        ln(cx, [280, 124], [280, 142]);
+        ln(cx, [280, 186], [280, 204]);
+        ln(cx, [280, 248], [160, 272]);
+        ln(cx, [160, 300], [160, 306]);
+        ln(cx, [160, 334], [160, 340]);
+        ln(cx, [160, 368], [160, 374]);
+        ln(cx, [160, 402], [160, 408]);
+        ln(cx, [160, 436], [280, 458]);
+        ln(cx, [280, 502], [280, 520]);
+        // Store → 3 storage layers
+        ln(cx, [280, 564], [119, 592]);
+        ln(cx, [280, 564], [337, 592]);
+        ln(cx, [280, 564], [561, 592]);
+        // Obs → both APIs
+        ln(cx, [119, 648], [119, 676]);
+        cx.strokeStyle = "rgba(140,138,132,0.14)";
+        ln(cx, [119, 648], [337, 676]);
+        // TS → both APIs
+        cx.strokeStyle = "rgba(140,138,132,0.22)";
+        ln(cx, [337, 648], [337, 676]);
+        cx.strokeStyle = "rgba(140,138,132,0.14)";
+        ln(cx, [337, 648], [119, 676]);
+        // Ref → both APIs
+        cx.strokeStyle = "rgba(140,138,132,0.18)";
+        ln(cx, [561, 636], [119, 676]);
+        ln(cx, [561, 636], [337, 676]);
+        // APIs → consumers
+        cx.strokeStyle = "rgba(140,138,132,0.22)";
+        ln(cx, [119, 726], [119, 754]);
+        ln(cx, [337, 726], [337, 754]);
+        ln(cx, [561, 754], [561, 726]);
+        // Ingestion loop (dashed)
+        cx.setLineDash([4, 3]);
+        cx.strokeStyle = "rgba(186,117,23,0.2)";
+        plArr(cx, [
+          [561, 676],
+          [674, 676],
+          [674, 80],
+          [370, 80],
+        ]);
+        cx.setLineDash([]);
+        // Ref data from store
+        cx.strokeStyle = "rgba(140,138,132,0.15)";
+        ln(cx, [340, 542], [561, 592]);
+      }
+
+      let lastT = 0;
+      function animate(t) {
+        requestAnimationFrame(animate);
+        const sp = parseFloat(document.getElementById("sp").value) || 1;
+        if (paused) {
+          lastT = t;
+          return;
+        }
+        const dt = Math.min(t - lastT, 50);
+        lastT = t;
+        ctx.clearRect(0, 0, W, H);
+        drawConns(ctx);
+        flows.forEach((f) => {
+          f.timer += dt;
+          while (f.timer >= f.rate) {
+            f.timer -= f.rate;
+            if (particles.length < MAX_P) particles.push(new Pt(f));
+          }
+        });
+        particles = particles.filter((p) => {
+          p.update((sp * dt) / 16.67);
+          if (p.dead) return false;
+          p.draw(ctx);
+          return true;
+        });
+      }
+      requestAnimationFrame(animate);
+    </script>
+  </body>
+</html>
